@@ -1,0 +1,103 @@
+{% extends "base_icts.html" %}
+
+{% block title %}Mi panel · SIGMA ICTS{% endblock %}
+{% block page_title %}Mi panel{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1.25rem">
+  <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap">
+    <div>
+      <h2 style="margin:0">👋 Bienvenido/a</h2>
+      <div class="muted">Desde aquí puedes gestionar tus propuestas ICTS.</div>
+    </div>
+    {# Enlaces “mudos” por ahora (los activamos en el siguiente paso) #}
+    <div style="display:flex; gap:.5rem; flex-wrap:wrap">
+      <span class="chip" style="opacity:.6; cursor:default;">➕ Nueva propuesta</span>
+      <span class="chip" style="opacity:.6; cursor:default;">📄 Mis propuestas</span>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem">
+  <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1rem;">
+    <div class="kpi"><div class="kpi-num">{{ drafts|length }}</div><div class="kpi-label">Borradores</div></div>
+    <div class="kpi"><div class="kpi-num">{{ submitted|length }}</div><div class="kpi-label">Enviadas / Revisión</div></div>
+    <div class="kpi"><div class="kpi-num">{{ evaluated|length }}</div><div class="kpi-label">Evaluadas</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem;">📝 Borradores</h3>
+  {% if drafts %}
+    <ul class="list">
+      {% for p in drafts %}
+        <li class="list-item">
+          <div>
+            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
+            <div class="muted">ID #{{ p.id }}</div>
+          </div>
+          <div class="list-actions">
+            <span class="chip" title="Activaremos estos botones en el siguiente paso">✏️ Editar</span>
+            <span class="chip" title="Activaremos estos botones en el siguiente paso">🔍 Ver</span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">No tienes borradores.</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem;">📤 Enviadas / En revisión</h3>
+  {% if submitted %}
+    <ul class="list">
+      {% for p in submitted %}
+        <li class="list-item">
+          <div>
+            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
+            <div class="muted">ID #{{ p.id }}</div>
+          </div>
+          <div class="list-actions">
+            <span class="chip" title="Activaremos estos botones en el siguiente paso">🔍 Ver</span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">No tienes propuestas enviadas.</div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem;">✅ Evaluadas</h3>
+  {% if evaluated %}
+    <ul class="list">
+      {% for p in evaluated %}
+        <li class="list-item">
+          <div>
+            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
+            <div class="muted">ID #{{ p.id }}</div>
+          </div>
+          <div class="list-actions">
+            <span class="chip" title="Activaremos estos botones en el siguiente paso">🔍 Ver informe</span>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">Aún no tienes propuestas evaluadas.</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+.kpi{ background:var(--bg-card); border:1px solid var(--border); border-radius:1rem; padding:1rem; text-align:center; }
+.kpi-num{ font-size:1.8rem; font-weight:900; }
+.kpi-label{ color:#4a5568; font-weight:600; }
+.list{ list-style:none; padding:0; margin:0; }
+.list-item{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; border:1px solid var(--border); border-radius:.75rem; margin:.5rem 0; }
+.list-title{ font-weight:800; }
+.chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:var(--bg-card); box-shadow:var(--shadow); }
+.chip:hover{ background:#f3f4f6 }
+{% endblock %}

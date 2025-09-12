@@ -1,0 +1,19 @@
+{% extends "base_dtf.html" %}
+{% block title %}Bandeja del técnico{% endblock %}
+{% block page_title %}Bandeja del técnico{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin:0 0 .5rem">Solicitudes en curso</h2>
+  <ul>
+    {% for s in solicitudes %}
+      <li>
+        <a href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }}</a>
+        — {{ s.get_estado_display }} — {{ s.creado_en|date:"Y-m-d H:i" }}
+        — {{ s.solicitante.username }}
+      </li>
+    {% empty %}
+      <li>No hay solicitudes.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

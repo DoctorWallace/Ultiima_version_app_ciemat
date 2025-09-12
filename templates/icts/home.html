@@ -1,0 +1,66 @@
+{% extends "base_icts.html" %}
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+
+{% block title %}Σ SIGMA ICTS · Home{% endblock %}
+{% block page_title %}Σ SIGMA ICTS{% endblock %}
+
+{% block top_right_logos %}
+  {# Si tienes esta variable en contexto, se muestra el rol #}
+  {% if icts_role_name %}<span class="role-chip">{{ icts_role_name }}</span>{% endif %}
+
+  <nav class="top-actions">
+    <a href="{% url 'icts:user_dashboard' %}" class="chip">🏠 Mi panel</a>
+    <a href="javascript:history.back()" class="chip">⬅️ Atrás</a>
+    <a href="{% url 'accounts:logout' %}" class="chip">↩️ Salir</a>
+  </nav>
+
+  <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
+  <img src="{{ MEDIA_URL }}Logos/sol_icts.png.jpg" alt="ICTS">
+{% endblock %}
+
+{% block content %}
+
+  <!-- HERO de bienvenida -->
+  <div class="card">
+    <div class="hero" style="display:grid;gap:1rem;grid-template-columns:1.2fr .8fr;align-items:center;">
+      <div>
+        <h2 style="margin-bottom:.25rem;">¡Bienvenido/a!</h2>
+        <img alt="ICTS" src="{{ MEDIA_URL }}Logos/logo_sigma.png"
+             style="width:20%; border-radius:5rem; box-shadow:var(--shadow);">
+        <p class="lead" style="margin-top:.75rem; color:#4a5568;">
+          Portal de propuestas y gestión de acceso a la <strong>ICTS</strong> del CIEMAT.
+          Usa el botón “Entrar” para acceder con tu cuenta ICTS, o crea una cuenta si aún no la tienes.
+        </p>
+        <div style="margin-top:1rem">
+          <a class="cta" href="{% url 'accounts:login_icts' %}?next={% url 'icts:user_dashboard' %}">
+  Entrar
+</a>
+
+          <a class="cta" style="margin-left:.5rem;" href="/icts/register/">Crear cuenta</a>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- Accesos grandes centrados -->
+  <div class="card">
+    <h3 style="margin-bottom:.75rem;">Áreas Σ-SIGMA ICTS</h3>
+    <div class="quick-wrap">
+      {% include "icts/_facilities_quicklinks.html" %}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_css %}
+  /* Si necesitas estilos extra específicos del home, van aquí */
+  .cta{
+    display:inline-block; background:var(--primary); color:#fff; text-decoration:none;
+    padding:.75rem 1.25rem; border-radius:.75rem; font-weight:800; box-shadow:var(--shadow);
+    transition: transform .15s ease;
+  }
+  .cta:hover { transform: translateY(-2px); }
+  .quick-wrap{ display:flex; justify-content:center; }
+{% endblock %}

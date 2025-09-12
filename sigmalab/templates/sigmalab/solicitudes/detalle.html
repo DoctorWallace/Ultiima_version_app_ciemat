@@ -1,0 +1,38 @@
+{% extends "base_dtf.html" %}
+{% block title %}Detalle solicitud{% endblock %}
+{% block page_title %}Detalle solicitud{% endblock %}
+{% block content %}
+<div class="card">
+  <h2 style="margin:0 0 .5rem">SOL#{{ solicitud.pk }} — {{ solicitud.get_estado_display }}</h2>
+  <p><strong>Material:</strong> {{ solicitud.material }}</p>
+  <p><strong>Procedencia:</strong> {{ solicitud.procedencia }}</p>
+  <p><strong>Tratamiento previo:</strong> {{ solicitud.tratamiento_previo }}</p>
+  <p><strong>Requisitos finales:</strong> {{ solicitud.requisitos_finales|linebreaksbr }}</p>
+  <p><strong>Observaciones:</strong> {{ solicitud.observaciones|linebreaksbr }}</p>
+  <p><strong>Código muestra:</strong> {{ solicitud.codigo_muestra|default:"—" }}</p>
+
+  <div style="margin:1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="cta" href="{% url 'sigmalab:nuevo-avance' solicitud.pk %}">Añadir avance</a>
+    {% if request.user.is_staff or request.user.groups.all.0.name == "Técnicos Σ-LAB" %}
+      <a class="cta" href="{% url 'sigmalab:cambiar-estado' solicitud.pk %}" style="background:var(--accent)">Cambiar estado</a>
+    {% endif %}
+    <a class="cta" href="{% url 'sigmalab:mis-solicitudes' %}">← Mis solicitudes</a>
+  </div>
+
+  <h3>Avances</h3>
+  <ul>
+    {% for a in avances %}
+      {% if a.visible_para_usuario or request.user.is_staff %}
+      <li>
+        <strong>[{{ a.get_tipo_display }}]</strong>
+        {{ a.contenido|linebreaksbr }}
+        <small> — {{ a.creado_en|date:"Y-m-d H:i" }} por {{ a.autor.username }}</small>
+        {% if a.adjunto %} — <a href="{{ a.adjunto.url }}" target="_blank">Adjunto</a>{% endif %}
+      </li>
+      {% endif %}
+    {% empty %}
+      <li>No hay avances.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

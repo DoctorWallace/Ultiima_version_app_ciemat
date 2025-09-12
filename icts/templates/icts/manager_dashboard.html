@@ -1,0 +1,36 @@
+{% extends "base_icts.html" %}
+{% block title %}Panel del manager{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Panel del manager</h2>
+  <div class="row g-3 mb-4">
+    {% for key,val in stats.items %}
+    <div class="col-6 col-md-3">
+      <div class="card text-center"><div class="card-body">
+        <h5 class="card-title text-capitalize">{{ key }}</h5>
+        <p class="display-6">{{ val }}</p>
+      </div></div>
+    </div>
+    {% endfor %}
+  </div>
+  <h5>Actividad por revisor</h5>
+  <div class="card"><div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Revisor</th><th>Decisión</th><th class="text-end">#</th></tr></thead>
+        <tbody>
+        {% for row in by_reviewer %}
+          <tr>
+            <td>{{ row.reviewer__username }}</td>
+            <td>{{ row.decision }}</td>
+            <td class="text-end">{{ row.n }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3">Sin datos.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base_icts.html" %}
+{% block title %}Usuarios Pendientes{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">👥 Usuarios Pendientes de Validación</h2>
+  </div>
+  
+  <div class="card-body">
+    <p class="mb-4">Estos usuarios han solicitado acceso a ICTS y están esperando tu aprobación.</p>
+    
+    {% if pending_users %}
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Centro</th>
+              <th>Email</th>
+              <th>Fecha de Registro</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in pending_users %}
+            <tr>
+              <td>
+                <strong>{{ user.user.username }}</strong><br>
+                <small class="text-muted">{{ user.user.get_full_name|default:"Sin nombre completo" }}</small>
+              </td>
+              <td>{{ user.icts_profile.center|default:"No especificado" }}</td>
+              <td>{{ user.user.email }}</td>
+              <td>{{ user.user.date_joined|date:"d/m/Y H:i" }}</td>
+              <td>
+                <form method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">
+                    ✅ Aprobar
+                  </button>
+                  <input type="hidden" name="user_id" value="{{ user.user.id }}">
+                </form>
+                <form method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm" 
+                          onclick="return confirm('¿Estás seguro de que quieres rechazar a este usuario?')">
+                    ❌ Rechazar
+                  </button>
+                  <input type="hidden" name="user_id" value="{{ user.user.id }}">
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+        <h4>🎉 ¡Excelente!</h4>
+        <p>No hay usuarios pendientes de validación en este momento.</p>
+      </div>
+    {% endif %}
+    
+    <div class="mt-4">
+      <a href="{% url 'icts:users_admin' %}" class="btn btn-primary">
+        📊 Ver Administración Completa de Usuarios
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

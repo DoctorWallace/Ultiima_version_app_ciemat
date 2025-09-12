@@ -1,0 +1,66 @@
+{% extends "base_dtf.html" %}
+{% block title %}Σ-LAB · Panel Técnico{% endblock %}
+{% block page_title %}Σ-LAB · Panel Técnico{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="cta" href="{% url 'sigmalab:bandeja-tecnico' %}">Bandeja de entrada</a>
+    <a class="cta" href="{% url 'sigmalab:todas-solicitudes' %}" style="background:var(--accent)">Todas (con filtros)</a>
+    <a class="cta" href="{% url 'sigmalab:usuarios-overview' %}">Usuarios</a>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem;">Bandeja de entrada</h3>
+  <div style="display:grid; gap:1rem; grid-template-columns:repeat(3,1fr);">
+    <!-- Pendientes -->
+    <div>
+      <h4>Pendientes ({{ contadores.pendientes }})</h4>
+      <ul>
+        {% for s in pendientes %}
+          <li>
+            #{{ s.id }} · {{ s.solicitante.username }}
+            <a class="cta" style="padding:.15rem .5rem; margin-left:.25rem;"
+               href="{% url 'sigmalab:detalle-solicitud' s.id %}">Ver</a>
+          </li>
+        {% empty %}
+          <li>—</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Aceptadas -->
+    <div>
+      <h4>Aceptadas ({{ contadores.aceptadas }})</h4>
+      <ul>
+        {% for s in aceptadas %}
+          <li>
+            #{{ s.id }} · {{ s.solicitante.username }}
+            <a class="cta" style="padding:.15rem .5rem; margin-left:.25rem;"
+               href="{% url 'sigmalab:detalle-solicitud' s.id %}">Ver</a>
+          </li>
+        {% empty %}
+          <li>—</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Rechazadas -->
+    <div>
+      <h4>Rechazadas ({{ contadores.rechazadas }})</h4>
+      <ul>
+        {% for s in rechazadas %}
+          <li>
+            #{{ s.id }} · {{ s.solicitante.username }}
+            <a class="cta" style="padding:.15rem .5rem; margin-left:.25rem;"
+               href="{% url 'sigmalab:detalle-solicitud' s.id %}">Ver</a>
+          </li>
+        {% empty %}
+          <li>—</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

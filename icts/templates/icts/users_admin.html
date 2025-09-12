@@ -1,0 +1,145 @@
+{% extends "base_icts.html" %}
+{% block title %}Administración de Usuarios{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">👥 Administración de Usuarios</h2>
+  </div>
+  
+  <div class="card-body">
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <h5>Total Usuarios</h5>
+            <h3>{{ total_users }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-warning text-white">
+          <div class="card-body">
+            <h5>Pendientes</h5>
+            <h3>{{ pending_count }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5>Activos</h5>
+            <h3>{{ active_users }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <h5>Staff</h5>
+            <h3>{{ staff_users }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="mb-3">
+      <form method="get" class="form-inline">
+        <select name="sort" class="form-select me-2">
+          <option value="name" {% if sort == 'name' %}selected{% endif %}>Ordenar por Nombre</option>
+          <option value="email" {% if sort == 'email' %}selected{% endif %}>Ordenar por Email</option>
+          <option value="joined" {% if sort == 'joined' %}selected{% endif %}>Ordenar por Fecha de Registro</option>
+          <option value="last_login" {% if sort == 'last_login' %}selected{% endif %}>Ordenar por Último Acceso</option>
+          <option value="active" {% if sort == 'active' %}selected{% endif %}>Ordenar por Estado</option>
+        </select>
+        <button type="submit" class="btn btn-outline-primary">Aplicar</button>
+      </form>
+    </div>
+    
+    <!-- Lista de usuarios -->
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Centro</th>
+            <th>Email</th>
+            <th>Registro</th>
+            <th>Último Acceso</th>
+            <th>Estado</th>
+            <th>Grupos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr class="{% if not user.is_active %}table-warning{% endif %}">
+            <td>
+              <strong>{{ user.username }}</strong><br>
+              <small class="text-muted">{{ user.get_full_name|default:"Sin nombre completo" }}</small>
+            </td>
+            <td>
+              {% if user.icts_profile %}
+                {{ user.icts_profile.center|default:"No especificado" }}
+              {% else %}
+                <span class="text-muted">Sin perfil ICTS</span>
+              {% endif %}
+            </td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+            <td>
+              {% if user.last_login %}
+                {{ user.last_login|date:"d/m/Y H:i" }}
+              {% else %}
+                <span class="text-muted">Nunca</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if user.is_active %}
+                <span class="badge bg-success">Activo</span>
+              {% else %}
+                <span class="badge bg-warning">Inactivo</span>
+              {% endif %}
+              {% if user.is_staff %}
+                <span class="badge bg-info">Staff</span>
+              {% endif %}
+            </td>
+            <td>
+              {% for group in user.groups.all %}
+                <span class="badge bg-secondary">{{ group.name }}</span>
+              {% empty %}
+                <span class="text-muted">Sin grupos</span>
+              {% endfor %}
+            </td>
+            <td>
+              {% if not user.is_active %}
+                <a href="{% url 'icts:approve_user' user.id %}" class="btn btn-success btn-sm">
+                  ✅ Activar
+                </a>
+                <a href="{% url 'icts:reject_user' user.id %}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('¿Estás seguro de que quieres eliminar a este usuario?')">
+                  ❌ Eliminar
+                </a>
+              {% else %}
+                <span class="text-muted">Usuario activo</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="mt-4">
+      <a href="{% url 'icts:pending_users' %}" class="btn btn-warning">
+        ⏳ Ver Solo Pendientes
+      </a>
+      <a href="{% url 'icts:manager_dashboard' %}" class="btn btn-primary">
+        📊 Volver al Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

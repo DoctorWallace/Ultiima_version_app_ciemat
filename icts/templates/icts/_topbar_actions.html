@@ -1,0 +1,15 @@
+{% if request.user.is_authenticated %}
+  <span class="role-chip">{{ icts_role_name }}</span>
+  <nav class="top-actions">
+    <a href="{% url 'icts:user_dashboard' %}" class="chip">🏠 Mi panel</a>
+    <a href="javascript:history.back()" class="chip">⬅️ Atrás</a>
+    <a href="{% url 'accounts:logout' %}" class="chip">↩️ Salir</a>
+  </nav>
+  <style>
+    .top-actions{display:inline-flex;gap:.5rem;align-items:center;margin-left:.5rem}
+    .chip{display:inline-flex;align-items:center;padding:.35rem .65rem;border:1px solid var(--border);
+      border-radius:999px;text-decoration:none;color:var(--text);background:var(--bg-card)}
+    .chip:hover{background:var(--bg-main)}
+    .role-chip{padding:.35rem .65rem;border-radius:999px;font-weight:700;background:var(--primary);color:#fff}
+  </style>
+{% endif %}

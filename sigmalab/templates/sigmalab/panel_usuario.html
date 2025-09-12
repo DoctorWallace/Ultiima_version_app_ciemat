@@ -1,0 +1,36 @@
+{% extends "base_dtf.html" %}
+{% block title %}Σ-LAB · Mi Panel{% endblock %}
+{% block page_title %}Σ-LAB · Mi Panel{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="cta" href="{% url 'sigmalab:nueva-solicitud' %}">Nueva solicitud</a>
+    <a class="cta" href="{% url 'sigmalab:mis-solicitudes' %}" style="background:var(--accent)">Mis solicitudes</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+  <h3>Resumen</h3>
+  <p style="margin:.25rem 0;">Pendientes: <strong>{{ recuento.pendiente }}</strong></p>
+  <p style="margin:.25rem 0;">En curso: <strong>{{ recuento.en_curso }}</strong></p>
+  <p style="margin:.25rem 0;">Aceptadas: <strong>{{ recuento.aceptada }}</strong></p>
+  <p style="margin:.25rem 0;">Rechazadas: <strong>{{ recuento.rechazada }}</strong></p>
+  <p style="margin:.25rem 0;">Finalizadas: <strong>{{ recuento.finalizada }}</strong></p>
+</div>
+
+<div class="card">
+  <h3>Mis últimas solicitudes</h3>
+  <ul style="margin-top:.5rem;">
+    {% for s in mias %}
+      <li>
+        #{{ s.id }} · {{ s.get_estado_display }} · {{ s.creado_en|date:"Y-m-d H:i" }}
+        <a class="cta" style="padding:.15rem .5rem; margin-left:.25rem;"
+           href="{% url 'sigmalab:detalle-solicitud' s.id %}">Ver</a>
+      </li>
+    {% empty %}
+      <li>No tienes solicitudes.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

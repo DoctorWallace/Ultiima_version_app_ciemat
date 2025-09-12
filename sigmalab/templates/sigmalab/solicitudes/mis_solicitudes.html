@@ -1,0 +1,21 @@
+{% extends "base_dtf.html" %}
+{% block title %}Mis solicitudes{% endblock %}
+{% block page_title %}Mis solicitudes{% endblock %}
+{% block content %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center">
+    <h2 style="margin:0">Listado</h2>
+    <a class="cta" href="{% url 'sigmalab:nueva-solicitud' %}" style="background:var(--accent)">Nueva</a>
+  </div>
+  <ul style="margin-top:1rem;">
+    {% for s in solicitudes %}
+      <li style="margin:.25rem 0">
+        <a href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }} · {{ s.material|default:"(sin material)" }}</a>
+        — <em>{{ s.get_estado_display }}</em> — {{ s.creado_en|date:"Y-m-d H:i" }}
+      </li>
+    {% empty %}
+      <li>No tienes solicitudes.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

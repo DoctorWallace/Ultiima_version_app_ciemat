@@ -1,0 +1,40 @@
+{% extends "base_icts.html" %}
+{% block title %}Mis propuestas{% endblock %}
+{% block page_title %}Mis propuestas{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h3 style="margin:0;">Listado</h3>
+    <a class="chip" href="{% url 'icts:proposal_create' %}">➕ Nueva propuesta</a>
+  </div>
+  <hr style="margin:.75rem 0;">
+  {% if proposals %}
+    <ul class="list">
+      {% for p in proposals %}
+        <li class="list-item">
+          <div>
+            <div class="list-title">{{ p.title|default:"(Sin título)" }}</div>
+            <div class="muted">ID #{{ p.id }}</div>
+          </div>
+          <div class="list-actions">
+            <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">🔍 Ver</a>
+            <a class="chip" href="{% url 'icts:proposal_edit' p.id %}">✏️ Editar</a>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="muted">No tienes propuestas aún.</div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+.list{ list-style:none; padding:0; margin:0; }
+.list-item{ display:flex; justify-content:space-between; align-items:center; padding:.75rem 1rem; border:1px solid var(--border); border-radius:.75rem; margin:.5rem 0; }
+.list-title{ font-weight:800; }
+.chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:var(--bg-card); box-shadow:var(--shadow); }
+.chip:hover{ background:#f3f4f6 }
+{% endblock %}

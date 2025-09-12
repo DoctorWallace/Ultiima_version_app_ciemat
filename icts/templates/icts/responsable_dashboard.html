@@ -1,0 +1,30 @@
+{% extends "base_icts.html" %}
+{% block title %}Panel del responsable{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Panel del responsable</h2>
+  <div class="row g-3 mb-4">
+    {% for key,val in stats.items %}
+    <div class="col-6 col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-capitalize">{{ key }}</h5>
+          <p class="display-6">{{ val }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <h5>Últimas propuestas</h5>
+  <ul class="list-group">
+    {% for p in latest %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <a href="{% url 'icts:proposal_detail' p.pk %}">{{ p.title }}</a>
+        <small>{{ p.created_at|date:"Y-m-d H:i" }}</small>
+      </li>
+    {% empty %}
+      <li class="list-group-item">No hay propuestas todavía.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

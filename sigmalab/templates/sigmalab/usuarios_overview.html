@@ -1,0 +1,34 @@
+{% extends "base_dtf.html" %}
+{% block title %}Σ-LAB · Usuarios{% endblock %}
+{% block page_title %}Σ-LAB · Usuarios{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom:1rem;">
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    <a class="cta" href="{% url 'sigmalab:panel-tecnico' %}">← Volver al panel</a>
+    <a class="cta" href="{% url 'sigmalab:todas-solicitudes' %}">Ver todas las solicitudes</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem;">
+  <h3>Altas recientes</h3>
+  <ul style="margin-top:.5rem;">
+    {% for u in recientes %}
+      <li>{{ u.username }} · {{ u.email }} · {{ u.date_joined|date:"Y-m-d H:i" }} · Solicitudes: <strong>{{ u.num_solicitudes }}</strong></li>
+    {% empty %}
+      <li>—</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Usuarios (con nº de solicitudes)</h3>
+  <ul style="margin-top:.5rem;">
+    {% for u in usuarios %}
+      <li>{{ u.username }} · {{ u.email }} · {{ u.date_joined|date:"Y-m-d" }} · <strong>{{ u.num_solicitudes }}</strong></li>
+    {% empty %}
+      <li>No hay usuarios.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

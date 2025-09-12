@@ -1,0 +1,156 @@
+{% load static %}
+{% load form_extras %}
+{% get_media_prefix as MEDIA_URL %}
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Σ SIGMA ICTS{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+      :root{
+        --primary:#1a365d; --primary-dark:#0f2a4a; --primary-light:#2d5a8b;
+        --accent:#17a2b8; --accent-light:#20c997;
+        --bg-main:#f7fafc; --bg-card:#ffffff; --bg-sidebar:#2d3748;
+        --text:#2d3748; --muted:#4b5563; --border:#e2e8f0;
+        --shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+        --shadow-lg:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);
+        --gradient-primary:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{height:100%;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg-main);color:var(--text);line-height:1.6}
+
+      .app{display:flex;min-height:100vh}
+      .sidebar{width:360px; background:var(--bg-sidebar); position:fixed; height:100vh; overflow:hidden; z-index:1000; box-shadow:var(--shadow-lg)}
+      .main{flex:1; margin-left:360px; display:flex; flex-direction:column; min-height:100vh}
+      .logo{width:80px;height:80px;border-radius:16px;border:3px solid rgba(255,255,255,.2);object-fit:cover;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+      .brand-title{color:#fff;font-size:1.5rem;font-weight:800;margin:.75rem 0 .25rem}
+      .brand-sub{color:rgba(255,255,255,.85);font-size:.9rem;font-weight:500}
+      .banner{height:220px;position:relative;overflow:hidden;background:var(--gradient-primary);border-radius:0 0 1rem 1rem;margin:1rem 0}
+      .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease-in-out;background-size:cover;background-position:center}
+      .slide.active{opacity:1}
+      .overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,54,93,.6),rgba(15,42,74,.75));display:flex;align-items:center;justify-content:center;color:#fff;padding:1rem;text-align:center}
+      .banner-text{font-size:1.05rem;font-weight:800}
+      .nav{padding:.5rem 0;overflow-y:auto;height:calc(100vh - 220px - 160px)}
+
+      .main{flex:1;margin-left:320px;display:flex;flex-direction:column;min-height:100vh}
+      .header{background:var(--bg-card);border-bottom:1px solid var(--border);padding:1rem 2rem;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
+      .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+      .title{font-size:1.75rem;font-weight:900;margin:0}
+      .logos{display:flex;align-items:center;gap:.5rem}
+      .logos img{height:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08))}
+      .content{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:2rem}
+      .card{background:var(--bg-card);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+      .footer{background:var(--bg-sidebar);color:rgba(255,255,255,.8);text-align:center;padding:1.25rem;margin-top:auto}
+
+      .toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:1100;background:var(--primary);color:#fff;border:none;border-radius:.5rem;padding:.6rem .8rem}
+      .overlay-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999}
+
+      /* Responsive */
+      @media (max-width:1024px){
+        .sidebar{transform:translateX(-100%);transition:transform .3s}
+        .sidebar.open{transform:translateX(0)}
+        .overlay-bg.open{display:block}
+        .main{margin-left:0}
+        .toggle{display:block}
+      }
+
+      /* Páginas sin sidebar (si alguna vez lo necesitas) */
+      body.no-sidebar .sidebar{display:none}
+      body.no-sidebar .main{margin-left:0}
+      body.no-sidebar .toggle, body.no-sidebar .overlay-bg{display:none}
+
+      /* Pequeños estilos útiles en el header */
+      .top-actions{ display:flex; gap:.5rem; align-items:center; margin-left:.5rem }
+      .chip{
+        display:inline-flex; align-items:center; gap:.35rem;
+        padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px;
+        text-decoration:none; color:var(--text); background:var(--bg-card);
+        box-shadow:var(--shadow);
+      }
+      .chip:hover{ background:#f3f4f6 }
+      .role-chip{
+        padding:.35rem .65rem; border-radius:999px; font-weight:700;
+        background:var(--primary); color:white; box-shadow:var(--shadow);
+      }
+
+      {% block extra_css %}{% endblock %}
+    </style>
+  </head>
+
+  <body class="{% block body_class %}{% endblock %}">
+    <button class="toggle" onclick="toggleSidebar()">☰</button>
+    <div class="overlay-bg" onclick="closeSidebar()"></div>
+
+    <div class="app">
+      {# ===== Sidebar (único) ===== #}
+      {% block sidebar %}
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img class="logo" src="{{ MEDIA_URL }}Logos/logo_sigma.png" alt="SIGMA ICTS">
+          <div class="brand-title">SIGMA ICTS</div>
+          <div class="brand-sub">Sistema de Propuestas</div>
+        </div>
+
+        <div class="banner" id="ictsBanner">
+          <div class="slide active" style="background-image:url('{{ MEDIA_URL }}SEM_FIB/SEM1.png')"><div class="overlay"><div class="banner-text">SEM/EDX</div></div></div>
+          <div class="slide" style="background-image:url('{{ MEDIA_URL }}SEM_FIB/FIB.png')"><div class="overlay"><div class="banner-text">FIB</div></div></div>
+          <div class="slide" style="background-image:url('{{ MEDIA_URL }}sims_implant/sims.png')"><div class="overlay"><div class="banner-text">SIMS</div></div></div>
+          <div class="slide" style="background-image:url('{{ MEDIA_URL }}Confocal/leica.png')"><div class="overlay"><div class="banner-text">Confocal</div></div></div>
+        </div>
+
+        <nav class="nav">
+          {% include "icts/_sidebar.html" %}
+        </nav>
+      </aside>
+      {% endblock %}
+
+      {# ===== Main ===== #}
+      <main class="main">
+        <header class="header">
+          <div class="header-inner">
+            <h1 class="title">{% block page_title %}Σ SIGMA ICTS{% endblock %}</h1>
+            <div class="logos">
+              {% block top_right_logos %}
+                <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
+                <img src="{{ MEDIA_URL }}Logos/sol_icts.png.jpg" alt="ICTS">
+              {% endblock %}
+            </div>
+          </div>
+        </header>
+
+        <section class="content">
+          {% block content %}{% endblock %}
+        </section>
+
+        <footer class="footer">
+          CIEMAT · Infraestructura Científica y Tecnológica Singular — ICTS
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      (function(){
+        const slides = document.querySelectorAll('#ictsBanner .slide');
+        if(!slides.length) return;
+        let i=0;
+        setInterval(()=>{
+          slides[i].classList.remove('active');
+          i=(i+1)%slides.length;
+          slides[i].classList.add('active');
+        }, 4000);
+      })();
+      function toggleSidebar(){
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.overlay-bg').classList.toggle('open');
+      }
+      function closeSidebar(){
+        document.querySelector('.sidebar').classList.remove('open');
+        document.querySelector('.overlay-bg').classList.remove('open');
+      }
+      {% block extra_js %}{% endblock %}
+    </script>
+  </body>
+</html>

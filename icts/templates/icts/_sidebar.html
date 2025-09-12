@@ -1,0 +1,97 @@
+{% load static %}
+{% load form_extras %}
+
+<nav class="sidebar">
+  <ul class="menu">
+    <!-- Visibles SIEMPRE (anónimo o autenticado) -->
+    <li><a href="/icts/">🏠 Inicio</a></li>
+    <li><a href="{% url 'icts:proposal_evaluation' %}">🧭 Proposal evaluation procedure</a></li>
+    <li><a href="/faq/">❓ FAQ</a></li>
+
+    {% if request.user.is_authenticated %}
+      <li class="menu-sep"></li>
+
+      <!-- Ítems para cualquier autenticado ICTS -->
+    <li><a href="{% url 'icts:user_dashboard' %}">🏠 Mi panel</a></li>
+
+       {% url 'icts:dashboard' as icts_next %}
+       {% include "accounts/_logout_button.html" with next_url=icts_next %}
+
+      <!-- Solo revisores -->
+      {% if request.user|has_group:"revisores" %}
+        <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Bandeja revisor</a></li>
+      {% endif %}
+
+      <!-- Solo responsable -->
+      {% if request.user|has_group:"responsables" %}
+        <li><a href="{% url 'icts:responsable_dashboard' %}">🧭 Responsable</a></li>
+      {% endif %}
+
+      <!-- Solo manager -->
+      {% if request.user|has_group:"managers" %}
+        <li><a href="{% url 'icts:manager_dashboard' %}">🛠️ Manager</a></li>
+      {% endif %}
+
+      <li class="menu-sep"></li>
+      <li><a href="{% url 'accounts:logout' %}">↩️ Salir</a></li>
+    {% else %}
+
+      <!-- Usuario anónimo: SOLO accesos básicos -->
+      <li class="menu-sep"></li>
+          <li><a href="{% url 'icts:my_proposals' %}">📄 Mis solicitudes</a></li>
+
+
+
+
+{% if request.user.is_authenticated %}
+  <li><a href="{% url 'icts:user_dashboard' %}">🏠 Mi panel</a></li>
+  <li><a href="{% url 'icts:dashboard' %}">📊 Panel</a></li>
+
+  {# SOLO usuario normal: no revisor, no responsable, no manager, no superuser #}
+  {% if (not request.user|has_group:"revisores")
+        and (not request.user|has_group:"responsables")
+        and (not request.user|has_group:"managers")
+        and (not request.user.is_superuser) %}
+    <li><a href="{% url 'icts:my_proposals' %}">📄 Mis propuestas</a></li>
+  {% endif %}
+
+  {# Revisores #}
+  {% if request.user|has_group:"revisores" %}
+    <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Propuestas a evaluar</a></li>
+  {% endif %}
+
+  {# Responsable / Manager #}
+  {% if request.user|has_group:"responsables" %}<li><a href="{% url 'icts:responsable_dashboard' %}">🧭 Responsable</a></li>{% endif %}
+  {% if request.user|has_group:"managers" %}<li><a href="{% url 'icts:manager_dashboard' %}">🛠️ Manager</a></li>{% endif %}
+
+  {# Superusuario: acceso admin #}
+  {% if request.user.is_superuser %}
+    <li><a href="/admin/">⚙️ Admin</a></li>
+  {% endif %}
+{% endif %}
+
+  </ul>
+</nav>
+
+<style>
+/* ==== Estilos para el menú incluido (icts/_sidebar.html) ==== */
+.sidebar .menu{ list-style:none; margin:0; padding:1rem; }
+.sidebar .menu li{ margin:.25rem 0; }
+.sidebar .menu a{
+  display:block;
+  padding:.55rem .9rem;
+  border-radius:.5rem;
+  text-decoration:none;
+  color:#fff;                      /* ← blanco fijo */
+  opacity:.92;
+}
+.sidebar .menu a:hover{
+  background:rgba(255,255,255,.12);
+  opacity:1;
+}
+.sidebar .menu .menu-sep{
+  border-top:1px solid rgba(255,255,255,.25);
+  margin:.5rem 0;
+}
+
+</style>
