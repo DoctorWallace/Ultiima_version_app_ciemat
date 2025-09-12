@@ -9,15 +9,15 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="max-width: 980px;">
+<div class="container mt-4" style="max-width: 1200px;">
   <div class="card mb-3">
-    <div class="card-header"><h2 class="mb-0">🔬 Access Request Form</h2></div>
+    <div class="card-header"><h2 class="mb-0">🔬 Formulario de Solicitud de Acceso ICTS</h2></div>
     <div class="card-body">
-      <p class="mb-0">Completa el formulario para solicitar acceso a las instalaciones ICTS.</p>
+      <p class="mb-0">Completa el formulario para solicitar acceso a las instalaciones ICTS. Puedes guardar como borrador y continuar más tarde.</p>
     </div>
   </div>
 
-  <form method="post" novalidate>
+  <form method="post" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
 
     {% if form.non_field_errors %}
@@ -26,19 +26,32 @@
 
     <!-- Paso 1: Información del proyecto -->
     <div class="card project-title-card mb-3">
-      <div class="card-header"><h3 class="mb-0">📊 Step 1: Project Information</h3></div>
+      <div class="card-header"><h3 class="mb-0">📊 Paso 1: Información del Proyecto</h3></div>
       <div class="card-body">
         <div class="mb-3">
-          <label class="form-label project-title-label">🎯 Project Title *</label>
-          {% render_field form.title class="form-input" placeholder="Título del proyecto" %}
+          <label class="form-label project-title-label">🎯 Título del Proyecto *</label>
+          {% render_field form.title class="form-input" placeholder="Título descriptivo de tu proyecto" %}
           {{ form.title.errors }}
           <small class="muted">Es obligatorio para continuar.</small>
         </div>
 
-        <div class="mb-0">
-          <label class="form-label">Brief Description (Optional)</label>
-          {% render_field form.scope class="form-input" rows="5" placeholder="Breve descripción del proyecto" %}
+        <div class="mb-3">
+          <label class="form-label">📝 Descripción del Proyecto</label>
+          {% render_field form.scope class="form-input" rows="4" placeholder="Describe brevemente el alcance y objetivos de tu proyecto" %}
           {{ form.scope.errors }}
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">🆕 ¿Es una nueva solicitud?</label>
+            {% render_field form.is_new_request class="form-check" %}
+            {{ form.is_new_request.errors }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">🔗 Solicitud anterior (si aplica)</label>
+            {% render_field form.previous_access class="form-select" %}
+            {{ form.previous_access.errors }}
+          </div>
         </div>
       </div>
     </div>
@@ -46,21 +59,175 @@
     <!-- Resto del formulario (habilitado si hay título) -->
     <div id="rest-of-form" class="form-enabled">
 
-      <!-- Instalaciones requeridas -->
+      <!-- Paso 2: Instalaciones requeridas -->
       <div class="card mb-3">
-        <div class="card-header"><h3 class="mb-0">🔬 Facilities Required</h3></div>
+        <div class="card-header"><h3 class="mb-0">🔬 Paso 2: Instalaciones Requeridas</h3></div>
         <div class="card-body">
-          <p class="muted">Selecciona las instalaciones necesarias (multi-selección).</p>
-          {% render_field form.facilities class="form-select form-input" %}
-          {{ form.facilities.errors }}
+          <p class="muted mb-3">Selecciona las instalaciones que necesitas para tu proyecto:</p>
+          
+          <div class="facilities-grid">
+            <div class="facility-item">
+              <label class="facility-checkbox">
+                {% render_field form.facility_sem %}
+                <span class="facility-label">
+                  <span class="facility-icon">🔬</span>
+                  <span class="facility-name">SEM/EDX</span>
+                  <span class="facility-desc">Microscopía electrónica</span>
+                </span>
+              </label>
+            </div>
+            
+            <div class="facility-item">
+              <label class="facility-checkbox">
+                {% render_field form.facility_sem_fib %}
+                <span class="facility-label">
+                  <span class="facility-icon">⚡</span>
+                  <span class="facility-name">FIB</span>
+                  <span class="facility-desc">Haz de iones enfocados</span>
+                </span>
+              </label>
+            </div>
+            
+            <div class="facility-item">
+              <label class="facility-checkbox">
+                {% render_field form.facility_imp %}
+                <span class="facility-label">
+                  <span class="facility-icon">🎯</span>
+                  <span class="facility-name">Ion Implanter</span>
+                  <span class="facility-desc">Implantación iónica</span>
+                </span>
+              </label>
+            </div>
+            
+            <div class="facility-item">
+              <label class="facility-checkbox">
+                {% render_field form.facility_sims %}
+                <span class="facility-label">
+                  <span class="facility-icon">📊</span>
+                  <span class="facility-name">SIMS</span>
+                  <span class="facility-desc">Espectrometría de masas</span>
+                </span>
+              </label>
+            </div>
+            
+            <div class="facility-item">
+              <label class="facility-checkbox">
+                {% render_field form.facility_confocal %}
+                <span class="facility-label">
+                  <span class="facility-icon">🔍</span>
+                  <span class="facility-name">Confocal</span>
+                  <span class="facility-desc">Microscopía confocal</span>
+                </span>
+              </label>
+            </div>
+            
+            <div class="facility-item">
+              <label class="facility-checkbox">
+                {% render_field form.facility_vdg %}
+                <span class="facility-label">
+                  <span class="facility-icon">⚡</span>
+                  <span class="facility-name">VDG</span>
+                  <span class="facility-desc">Van de Graaff</span>
+                </span>
+              </label>
+            </div>
+            
+            <div class="facility-item">
+              <label class="facility-checkbox">
+                {% render_field form.facility_profilometer %}
+                <span class="facility-label">
+                  <span class="facility-icon">📏</span>
+                  <span class="facility-name">Profilometer</span>
+                  <span class="facility-desc">Perfilometría</span>
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Participantes -->
+      <!-- Paso 3: Información del solicitante -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0">👤 Paso 3: Información del Solicitante</h3></div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">¿El solicitante es diferente al usuario registrado?</label>
+            {% render_field form.applicant_is_different class="form-check" %}
+            {{ form.applicant_is_different.errors }}
+          </div>
+          
+          <div id="applicant-info" class="applicant-info-section">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">🏢 Organización/Centro</label>
+                {% render_field form.organization class="form-input" placeholder="Centro o institución" %}
+                {{ form.organization.errors }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">👤 Persona de contacto</label>
+                {% render_field form.contact_person class="form-input" placeholder="Nombre completo" %}
+                {{ form.contact_person.errors }}
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">📧 Email</label>
+                {% render_field form.email class="form-input" placeholder="email@ejemplo.com" %}
+                {{ form.email.errors }}
+              </div>
+              <div class="form-group">
+                <label class="form-label">📞 Teléfono</label>
+                {% render_field form.phone class="form-input" placeholder="Número de teléfono" %}
+                {{ form.phone.errors }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 4: Información del proyecto de financiación -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0">💰 Paso 4: Proyecto de Financiación</h3></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">📋 Nombre del proyecto</label>
+              {% render_field form.project_name class="form-input" placeholder="Nombre del proyecto de financiación" %}
+              {{ form.project_name.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">🌍 Tipo de proyecto</label>
+              {% render_field form.project_type class="form-input" placeholder="Internacional, Europeo, Nacional, Regional" %}
+              {{ form.project_type.errors }}
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">💵 Fuente de financiación</label>
+              {% render_field form.funding_source class="form-input" placeholder="Organismo financiador" %}
+              {{ form.funding_source.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">📅 Año de inicio</label>
+              {% render_field form.start_year class="form-input" placeholder="2024" %}
+              {{ form.start_year.errors }}
+            </div>
+            <div class="form-group">
+              <label class="form-label">📅 Año de fin</label>
+              {% render_field form.end_year class="form-input" placeholder="2025" %}
+              {{ form.end_year.errors }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 5: Participantes -->
       <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h3 class="mb-0">👥 Participants</h3>
-          <button type="button" id="add-participant" class="btn btn-sm btn-outline-primary">➕ Add Participant</button>
+          <h3 class="mb-0">👥 Paso 5: Participantes</h3>
+          <button type="button" id="add-participant" class="btn btn-sm btn-outline-primary">➕ Añadir Participante</button>
         </div>
         <div class="card-body">
           {{ formset.management_form }}
@@ -69,24 +236,24 @@
               <div class="card participant-card">
                 <div class="form-grid">
                   <div class="form-group">
-                    <label class="form-label">Full name *</label>
-                    {% render_field f.full_name class="form-input" %}
-                    {{ f.full_name.errors }}
+                    <label class="form-label">👤 Nombre completo *</label>
+                    {% render_field f.name class="form-input" placeholder="Nombre completo" %}
+                    {{ f.name.errors }}
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Email *</label>
-                    {% render_field f.email class="form-input" %}
-                    {{ f.email.errors }}
+                    <label class="form-label">🏢 Centro/Afiliación</label>
+                    {% render_field f.center class="form-input" placeholder="Centro o institución" %}
+                    {{ f.center.errors }}
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Affiliation</label>
-                    {% render_field f.affiliation class="form-input" %}
-                    {{ f.affiliation.errors }}
+                    <label class="form-label">📍 Dirección</label>
+                    {% render_field f.address class="form-input" placeholder="Dirección completa" %}
+                    {{ f.address.errors }}
                   </div>
                 </div>
                 {% if f.DELETE %}
                   <div class="mt-2">
-                    <label class="small text-muted">{{ f.DELETE }} Remove this participant</label>
+                    <label class="small text-muted">{{ f.DELETE }} Eliminar este participante</label>
                   </div>
                 {% endif %}
               </div>
@@ -95,14 +262,63 @@
         </div>
       </div>
 
-      <!-- Botones -->
+      <!-- Paso 6: Información adicional -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0">📚 Paso 6: Información Adicional</h3></div>
+        <div class="card-body">
+          <div class="form-group mb-3">
+            <label class="form-label">🔬 Experimentos previos</label>
+            {% render_field form.previous_experiments class="form-input" rows="3" placeholder="Describe experimentos previos relacionados con tu proyecto" %}
+            {{ form.previous_experiments.errors }}
+          </div>
+          
+          <div class="form-group mb-3">
+            <label class="form-label">📖 Referencias</label>
+            {% render_field form.references class="form-input" rows="3" placeholder="Referencias bibliográficas relevantes" %}
+            {{ form.references.errors }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 7: Archivos adjuntos -->
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="mb-0">📎 Paso 7: Archivos Adjuntos</h3></div>
+        <div class="card-body">
+          {{ attachment_formset.management_form }}
+          <div id="attachments-forms">
+            {% for f in attachment_formset %}
+              <div class="card attachment-card">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">📄 Nombre del documento</label>
+                    {% render_field f.name class="form-input" placeholder="Nombre descriptivo del documento" %}
+                    {{ f.name.errors }}
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">📁 Archivo</label>
+                    {% render_field f.file class="form-input" %}
+                    {{ f.file.errors }}
+                  </div>
+                </div>
+                {% if f.DELETE %}
+                  <div class="mt-2">
+                    <label class="small text-muted">{{ f.DELETE }} Eliminar este archivo</label>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
       <div class="card">
         <div class="card-body d-flex gap-2 justify-content-center">
-          <button type="submit" class="btn btn-secondary">💾 Save Draft</button>
+          <button type="submit" class="btn btn-secondary">💾 Guardar Borrador</button>
           {% if editing %}
-            <a href="{% url 'icts:proposal_detail' form.instance.pk %}" class="btn btn-light">Cancelar</a>
+            <a href="{% url 'icts:proposal_detail' form.instance.pk %}" class="btn btn-light">❌ Cancelar</a>
           {% else %}
-            <a href="{% url 'icts:my_proposals' %}" class="btn btn-light">Cancelar</a>
+            <a href="{% url 'icts:user_dashboard' %}" class="btn btn-light">❌ Cancelar</a>
           {% endif %}
         </div>
       </div>
@@ -116,16 +332,16 @@
   <div class="card participant-card">
     <div class="form-grid">
       <div class="form-group">
-        <label class="form-label">Full name *</label>
-        <input type="text" name="{{ formset.prefix }}-__prefix__-full_name" id="id_{{ formset.prefix }}-__prefix__-full_name" class="form-input" required>
+        <label class="form-label">👤 Nombre completo *</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-name" id="id_{{ formset.prefix }}-__prefix__-name" class="form-input" placeholder="Nombre completo" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Email *</label>
-        <input type="email" name="{{ formset.prefix }}-__prefix__-email" id="id_{{ formset.prefix }}-__prefix__-email" class="form-input" required>
+        <label class="form-label">🏢 Centro/Afiliación</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-center" id="id_{{ formset.prefix }}-__prefix__-center" class="form-input" placeholder="Centro o institución">
       </div>
       <div class="form-group">
-        <label class="form-label">Affiliation</label>
-        <input type="text" name="{{ formset.prefix }}-__prefix__-affiliation" id="id_{{ formset.prefix }}-__prefix__-affiliation" class="form-input">
+        <label class="form-label">📍 Dirección</label>
+        <input type="text" name="{{ formset.prefix }}-__prefix__-address" id="id_{{ formset.prefix }}-__prefix__-address" class="form-input" placeholder="Dirección completa">
       </div>
     </div>
     <input type="checkbox" name="{{ formset.prefix }}-__prefix__-DELETE" id="id_{{ formset.prefix }}-__prefix__-DELETE" style="display:none">
@@ -133,45 +349,257 @@
 </template>
 
 <style>
-/* Estilo compacto y legible */
-.form-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
-@media (max-width: 768px){ .form-grid{ grid-template-columns:1fr } }
+/* Estilos generales del formulario */
+.form-grid{ 
+  display:grid; 
+  grid-template-columns:repeat(3,1fr); 
+  gap:1rem; 
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px){ 
+  .form-grid{ grid-template-columns:1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
 
 .project-title-card{
   border:2px solid var(--primary);
   background:linear-gradient(135deg, rgba(26,54,93,.02), rgba(26,54,93,.06));
   box-shadow:var(--shadow);
 }
-.project-title-label{ font-size:1.1rem; font-weight:800; color:var(--primary) }
 
-.form-disabled{ opacity:.6; pointer-events:none; filter:blur(1px); transition:.2s }
-.form-enabled{ opacity:1; pointer-events:auto; filter:none }
+.project-title-label{ 
+  font-size:1.1rem; 
+  font-weight:800; 
+  color:var(--primary) 
+}
+
+.form-disabled{ 
+  opacity:.6; 
+  pointer-events:none; 
+  filter:blur(1px); 
+  transition:.2s 
+}
+
+.form-enabled{ 
+  opacity:1; 
+  pointer-events:auto; 
+  filter:none 
+}
 
 .form-input, textarea.form-input, select.form-input{
-  width:100%; padding:.9rem 1rem; border:2px solid var(--border); border-radius:.75rem;
-  background:var(--bg-card); box-shadow:var(--shadow-sm);
+  width:100%; 
+  padding:.9rem 1rem; 
+  border:2px solid var(--border); 
+  border-radius:.75rem;
+  background:var(--bg-card); 
+  box-shadow:var(--shadow-sm);
+  transition: all 0.2s ease;
 }
-.form-input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(26,54,93,.15) }
 
-.participant-card{ margin:.75rem 0; padding:1rem; border:1px solid var(--border); background:var(--bg-main) }
+.form-input:focus{ 
+  outline:none; 
+  border-color:var(--primary); 
+  box-shadow:0 0 0 4px rgba(26,54,93,.15) 
+}
 
-.muted{ color:var(--text-secondary) }
+.form-check {
+  margin-top: 0.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Grid de instalaciones */
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.facility-item {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.facility-item:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow);
+}
+
+.facility-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 0;
+}
+
+.facility-checkbox input[type="checkbox"] {
+  margin-right: 0.75rem;
+  transform: scale(1.2);
+}
+
+.facility-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.facility-icon {
+  font-size: 1.5rem;
+}
+
+.facility-name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.facility-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Sección de información del solicitante */
+.applicant-info-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-main);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+/* Tarjetas de participantes y archivos */
+.participant-card, .attachment-card{ 
+  margin:.75rem 0; 
+  padding:1rem; 
+  border:1px solid var(--border); 
+  background:var(--bg-main);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.participant-card:hover, .attachment-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.muted{ 
+  color:var(--text-secondary) 
+}
+
+/* Botones */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.btn-light {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-light:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* Alertas */
+.alert {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.alert-danger {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .facilities-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 
 <script>
-<div class="mb-3">
-  <label class="form-label project-title-label" for="{{ form.title.id_for_label }}">🎯 Project Title *</label>
-  {{ form.title }}
-  {{ form.title.errors }}
-  <small class="muted d-block mt-1">Es obligatorio para continuar.</small>
-</div>
-
-<div class="mb-0">
-  <label class="form-label" for="{{ form.scope.id_for_label }}">Brief Description (Optional)</label>
-  {{ form.scope }}
-  {{ form.scope.errors }}
-</div>
-
+// Funcionalidad para mostrar/ocultar información del solicitante
+(function() {
+  const applicantDifferent = document.getElementById('id_applicant_is_different');
+  const applicantInfo = document.getElementById('applicant-info');
+  
+  if (applicantDifferent && applicantInfo) {
+    function toggleApplicantInfo() {
+      if (applicantDifferent.checked) {
+        applicantInfo.style.display = 'block';
+      } else {
+        applicantInfo.style.display = 'none';
+      }
+    }
+    
+    applicantDifferent.addEventListener('change', toggleApplicantInfo);
+    toggleApplicantInfo(); // Estado inicial
+  }
+})();
 
 // Añadir participante
 (function(){
@@ -179,7 +607,9 @@
   const container = document.getElementById('participants-forms');
   const tmpl = document.getElementById('empty-participant-form');
   const total = document.getElementById('id_{{ formset.prefix }}-TOTAL_FORMS');
+  
   if(!addBtn||!container||!tmpl||!total) return;
+  
   addBtn.addEventListener('click', ()=>{
     const idx = parseInt(total.value||'0',10);
     const html = tmpl.innerHTML.replace(/__prefix__/g, idx);
@@ -188,6 +618,27 @@
     container.appendChild(node.firstElementChild);
     total.value = idx+1;
   });
+})();
+
+// Validación del título para habilitar el resto del formulario
+(function() {
+  const titleInput = document.getElementById('id_title');
+  const restOfForm = document.getElementById('rest-of-form');
+  
+  if (titleInput && restOfForm) {
+    function toggleForm() {
+      if (titleInput.value.trim()) {
+        restOfForm.classList.remove('form-disabled');
+        restOfForm.classList.add('form-enabled');
+      } else {
+        restOfForm.classList.remove('form-enabled');
+        restOfForm.classList.add('form-disabled');
+      }
+    }
+    
+    titleInput.addEventListener('input', toggleForm);
+    toggleForm(); // Estado inicial
+  }
 })();
 </script>
 {% endblock %}

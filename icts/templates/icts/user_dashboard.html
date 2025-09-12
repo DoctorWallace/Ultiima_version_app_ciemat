@@ -1,0 +1,492 @@
+{% extends "base_icts.html" %}
+{% block title %}Mi Panel - SIGMA ICTS{% endblock %}
+{% block page_title %}Mi Panel de Usuario{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  
+  <!-- Estadísticas rápidas -->
+  <div class="stats-grid">
+    <div class="stat-card draft">
+      <div class="stat-icon">📝</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ drafts.count }}</div>
+        <div class="stat-label">Borradores</div>
+      </div>
+    </div>
+    
+    <div class="stat-card submitted">
+      <div class="stat-icon">📤</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ submitted.count }}</div>
+        <div class="stat-label">Enviadas</div>
+      </div>
+    </div>
+    
+    <div class="stat-card evaluated">
+      <div class="stat-icon">🔍</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ evaluated.count }}</div>
+        <div class="stat-label">Evaluadas</div>
+      </div>
+    </div>
+    
+    <div class="stat-card total">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ drafts.count|add:submitted.count|add:evaluated.count }}</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="quick-actions">
+    <a href="{% url 'icts:proposal_create' %}" class="action-btn primary">
+      <span class="action-icon">➕</span>
+      <span class="action-text">Nueva Propuesta</span>
+    </a>
+    <a href="{% url 'icts:my_proposals' %}" class="action-btn secondary">
+      <span class="action-icon">📄</span>
+      <span class="action-text">Ver Todas</span>
+    </a>
+  </div>
+
+  <!-- Sección de Borradores -->
+  {% if drafts %}
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">📝 Borradores</h3>
+      <span class="section-badge">{{ drafts.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for proposal in drafts %}
+      <div class="proposal-card draft">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ proposal.title|default:"(Sin título)" }}</h4>
+          <span class="proposal-status draft">Borrador</span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">ID:</span>
+            <span class="meta-value">#{{ proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Creada:</span>
+            <span class="meta-value">{{ proposal.created_at|date:"d/m/Y" }}</span>
+          </div>
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn-small view">👁️ Ver</a>
+          <a href="{% url 'icts:proposal_edit' proposal.id %}" class="btn-small edit">✏️ Editar</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sección de Propuestas Enviadas -->
+  {% if submitted %}
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">📤 Enviadas a Revisión</h3>
+      <span class="section-badge">{{ submitted.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for proposal in submitted %}
+      <div class="proposal-card submitted">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ proposal.title|default:"(Sin título)" }}</h4>
+          <span class="proposal-status submitted">En Revisión</span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">ID:</span>
+            <span class="meta-value">#{{ proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Enviada:</span>
+            <span class="meta-value">{{ proposal.created_at|date:"d/m/Y" }}</span>
+          </div>
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn-small view">👁️ Ver Estado</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sección de Propuestas Evaluadas -->
+  {% if evaluated %}
+  <div class="section">
+    <div class="section-header">
+      <h3 class="section-title">🔍 Evaluadas</h3>
+      <span class="section-badge">{{ evaluated.count }}</span>
+    </div>
+    <div class="proposals-grid">
+      {% for proposal in evaluated %}
+      <div class="proposal-card evaluated">
+        <div class="proposal-header">
+          <h4 class="proposal-title">{{ proposal.title|default:"(Sin título)" }}</h4>
+          <span class="proposal-status evaluated">Evaluada</span>
+        </div>
+        <div class="proposal-meta">
+          <div class="meta-item">
+            <span class="meta-label">ID:</span>
+            <span class="meta-value">#{{ proposal.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Estado:</span>
+            <span class="meta-value">{{ proposal.get_status_display }}</span>
+          </div>
+        </div>
+        <div class="proposal-actions">
+          <a href="{% url 'icts:proposal_detail' proposal.id %}" class="btn-small view">👁️ Ver Resultado</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Mensaje si no hay propuestas -->
+  {% if not drafts and not submitted and not evaluated %}
+  <div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h3 class="empty-title">No tienes propuestas aún</h3>
+    <p class="empty-description">Crea tu primera propuesta para solicitar acceso a las instalaciones ICTS.</p>
+    <a href="{% url 'icts:proposal_create' %}" class="btn-primary">➕ Crear Primera Propuesta</a>
+  </div>
+  {% endif %}
+
+</div>
+
+<style>
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Estadísticas */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card.draft { border-left: 4px solid #6c757d; }
+.stat-card.submitted { border-left: 4px solid #17a2b8; }
+.stat-card.evaluated { border-left: 4px solid #28a745; }
+.stat-card.total { border-left: 4px solid var(--primary); }
+
+.stat-icon {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Acciones rápidas */
+.quick-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.action-btn.primary {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  color: white;
+}
+
+.action-btn.secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.action-btn.secondary:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.action-icon {
+  font-size: 1.2rem;
+}
+
+/* Secciones */
+.section {
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-badge {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Grid de propuestas */
+.proposals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.proposal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
+}
+
+.proposal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.proposal-card.draft { border-left: 4px solid #6c757d; }
+.proposal-card.submitted { border-left: 4px solid #17a2b8; }
+.proposal-card.evaluated { border-left: 4px solid #28a745; }
+
+.proposal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.proposal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.proposal-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.proposal-status.draft {
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.proposal-status.submitted {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.proposal-status.evaluated {
+  background: #d4edda;
+  color: #155724;
+}
+
+.proposal-meta {
+  margin-bottom: 1rem;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.meta-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.meta-value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.proposal-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-small.view {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-small.view:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.btn-small.edit {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.btn-small.edit:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--gradient-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .proposals-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    justify-content: center;
+  }
+}
+</style>
+{% endblock %}

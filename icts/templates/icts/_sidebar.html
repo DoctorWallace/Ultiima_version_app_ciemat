@@ -11,65 +11,38 @@
     {% if request.user.is_authenticated %}
       <li class="menu-sep"></li>
 
-      <!-- Ítems para cualquier autenticado ICTS -->
-    <li><a href="{% url 'icts:user_dashboard' %}">🏠 Mi panel</a></li>
+      <!-- Panel principal del usuario -->
+      <li><a href="{% url 'icts:user_dashboard' %}">🏠 Mi panel</a></li>
+      <li><a href="{% url 'icts:my_proposals' %}">📄 Mis propuestas</a></li>
+      <li><a href="{% url 'icts:proposal_create' %}">➕ Nueva propuesta</a></li>
 
-       {% url 'icts:dashboard' as icts_next %}
-       {% include "accounts/_logout_button.html" with next_url=icts_next %}
+      <li class="menu-sep"></li>
 
-      <!-- Solo revisores -->
+      <!-- Roles específicos -->
       {% if request.user|has_group:"revisores" %}
-        <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Bandeja revisor</a></li>
+        <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Propuestas a evaluar</a></li>
       {% endif %}
 
-      <!-- Solo responsable -->
       {% if request.user|has_group:"responsables" %}
-        <li><a href="{% url 'icts:responsable_dashboard' %}">🧭 Responsable</a></li>
+        <li><a href="{% url 'icts:responsable_dashboard' %}">🧭 Panel responsable</a></li>
       {% endif %}
 
-      <!-- Solo manager -->
       {% if request.user|has_group:"managers" %}
-        <li><a href="{% url 'icts:manager_dashboard' %}">🛠️ Manager</a></li>
+        <li><a href="{% url 'icts:manager_dashboard' %}">🛠️ Panel manager</a></li>
+      {% endif %}
+
+      {% if request.user.is_superuser %}
+        <li><a href="/admin/">⚙️ Administración</a></li>
       {% endif %}
 
       <li class="menu-sep"></li>
       <li><a href="{% url 'accounts:logout' %}">↩️ Salir</a></li>
     {% else %}
-
       <!-- Usuario anónimo: SOLO accesos básicos -->
       <li class="menu-sep"></li>
-          <li><a href="{% url 'icts:my_proposals' %}">📄 Mis solicitudes</a></li>
-
-
-
-
-{% if request.user.is_authenticated %}
-  <li><a href="{% url 'icts:user_dashboard' %}">🏠 Mi panel</a></li>
-  <li><a href="{% url 'icts:dashboard' %}">📊 Panel</a></li>
-
-  {# SOLO usuario normal: no revisor, no responsable, no manager, no superuser #}
-  {% if (not request.user|has_group:"revisores")
-        and (not request.user|has_group:"responsables")
-        and (not request.user|has_group:"managers")
-        and (not request.user.is_superuser) %}
-    <li><a href="{% url 'icts:my_proposals' %}">📄 Mis propuestas</a></li>
-  {% endif %}
-
-  {# Revisores #}
-  {% if request.user|has_group:"revisores" %}
-    <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Propuestas a evaluar</a></li>
-  {% endif %}
-
-  {# Responsable / Manager #}
-  {% if request.user|has_group:"responsables" %}<li><a href="{% url 'icts:responsable_dashboard' %}">🧭 Responsable</a></li>{% endif %}
-  {% if request.user|has_group:"managers" %}<li><a href="{% url 'icts:manager_dashboard' %}">🛠️ Manager</a></li>{% endif %}
-
-  {# Superusuario: acceso admin #}
-  {% if request.user.is_superuser %}
-    <li><a href="/admin/">⚙️ Admin</a></li>
-  {% endif %}
-{% endif %}
-
+      <li><a href="{% url 'accounts:login_icts' %}">🔐 Iniciar sesión</a></li>
+      <li><a href="{% url 'icts:register' %}">📝 Registrarse</a></li>
+    {% endif %}
   </ul>
 </nav>
 
