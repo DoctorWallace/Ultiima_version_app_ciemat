@@ -1,0 +1,600 @@
+{% extends "base_icts.html" %}
+{% load form_extras %}
+{% block title %}Dashboard del Revisor - SIGMA ICTS{% endblock %}
+{% block page_title %}Dashboard del Revisor{% endblock %}
+
+{% block content %}
+<div class="reviewer-dashboard-container">
+  
+  <!-- Estadísticas del revisor -->
+  <div class="reviewer-stats">
+    <div class="stat-card pending">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ pending_count }}</div>
+        <div class="stat-label">Pendientes</div>
+        <div class="stat-subtitle">Por evaluar</div>
+      </div>
+    </div>
+    
+    <div class="stat-card completed">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ completed_count }}</div>
+        <div class="stat-label">Completadas</div>
+        <div class="stat-subtitle">Este mes</div>
+      </div>
+    </div>
+    
+    <div class="stat-card approved">
+      <div class="stat-icon">👍</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ approved_count }}</div>
+        <div class="stat-label">Aprobadas</div>
+        <div class="stat-subtitle">Total</div>
+      </div>
+    </div>
+    
+    <div class="stat-card rejected">
+      <div class="stat-icon">👎</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ rejected_count }}</div>
+        <div class="stat-label">Rechazadas</div>
+        <div class="stat-subtitle">Total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evaluaciones pendientes con plazo -->
+  <div class="pending-section">
+    <div class="section-header">
+      <h3 class="section-title">⏳ Evaluaciones Pendientes</h3>
+      <span class="section-badge urgent">{{ urgent_count }} Urgentes</span>
+    </div>
+    
+    {% if pending_reviews %}
+      <div class="reviews-grid">
+        {% for item in pending_reviews %}
+        <div class="review-card {% if item.is_urgent %}urgent{% endif %}">
+          <div class="review-header">
+            <h4 class="proposal-title">{{ item.review.proposal.title|default:"(Sin título)" }}</h4>
+            <div class="review-meta">
+              <span class="proposal-id">#{{ item.review.proposal.id }}</span>
+              {% if item.is_urgent %}
+                <span class="urgent-badge">🚨 URGENTE</span>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="review-info">
+            <div class="info-row">
+              <span class="info-label">Solicitante:</span>
+              <span class="info-value">{{ item.review.proposal.applicant.get_full_name|default:item.review.proposal.applicant.get_username }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Enviada:</span>
+              <span class="info-value">{{ item.review.proposal.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Días pendiente:</span>
+              <span class="info-value {% if item.days_pending > 7 %}overdue{% endif %}">{{ item.days_pending }} días</span>
+            </div>
+            {% if item.review.proposal.scope %}
+            <div class="info-row">
+              <span class="info-label">Descripción:</span>
+              <span class="info-value">{{ item.review.proposal.scope|truncatechars:100 }}</span>
+            </div>
+            {% endif %}
+          </div>
+          
+          <div class="review-actions">
+            <a href="{% url 'icts:review_start' item.review.proposal.pk %}" class="action-btn evaluate">
+              <span class="btn-icon">📝</span>
+              <span class="btn-text">Evaluar</span>
+            </a>
+            <a href="{% url 'icts:proposal_detail' item.review.proposal.pk %}" class="action-btn view">
+              <span class="btn-icon">👁️</span>
+              <span class="btn-text">Ver Detalle</span>
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">🎉</div>
+        <h3 class="empty-title">¡Excelente trabajo!</h3>
+        <p class="empty-description">No tienes evaluaciones pendientes en este momento.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Acceso al historial -->
+  <div class="history-section">
+    <div class="section-header">
+      <h3 class="section-title">📚 Historial de Evaluaciones</h3>
+      <a href="{% url 'icts:review_history' %}" class="history-link">
+        <span class="link-icon">📊</span>
+        <span class="link-text">Ver Historial Completo</span>
+      </a>
+    </div>
+    
+    <div class="history-preview">
+      <p class="preview-text">Accede a tu historial completo de evaluaciones con filtros de búsqueda, estadísticas detalladas y exportación de datos.</p>
+      <div class="preview-features">
+        <div class="feature-item">
+          <span class="feature-icon">🔍</span>
+          <span class="feature-text">Filtros avanzados</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📈</span>
+          <span class="feature-text">Estadísticas</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">📄</span>
+          <span class="feature-text">Exportar datos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Evaluaciones recientes -->
+  <div class="recent-section">
+    <div class="section-header">
+      <h3 class="section-title">🕒 Evaluaciones Recientes</h3>
+    </div>
+    
+    {% if recent_reviews %}
+      <div class="recent-list">
+        {% for review in recent_reviews %}
+        <div class="recent-item">
+          <div class="recent-info">
+            <div class="recent-title">{{ review.proposal.title|default:"(Sin título)" }}</div>
+            <div class="recent-meta">
+              <span class="recent-decision decision-{{ review.decision }}">
+                {% if review.decision == 'approve' %}✅ Aprobada
+                {% elif review.decision == 'reject' %}❌ Rechazada
+                {% elif review.decision == 'request_changes' %}🔄 Cambios solicitados
+                {% else %}{{ review.get_decision_display }}{% endif %}
+              </span>
+              <span class="recent-date">{{ review.updated_at|date:"d/m/Y H:i" }}</span>
+            </div>
+          </div>
+          <div class="recent-actions">
+            <a href="{% url 'icts:proposal_detail' review.proposal.pk %}" class="btn-small view">Ver</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-recent">
+        <p>No hay evaluaciones recientes.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<style>
+.reviewer-dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Estadísticas del revisor */
+.reviewer-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card.pending { border-left: 4px solid #ffc107; }
+.stat-card.completed { border-left: 4px solid #28a745; }
+.stat-card.approved { border-left: 4px solid #17a2b8; }
+.stat-card.rejected { border-left: 4px solid #dc3545; }
+
+.stat-icon {
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.stat-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Secciones */
+.pending-section, .history-section, .recent-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.section-badge.urgent {
+  background: #dc3545;
+  color: white;
+}
+
+/* Grid de revisiones */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 1.5rem;
+}
+
+.review-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.review-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.review-card.urgent {
+  border-left: 4px solid #dc3545;
+  background: #fff5f5;
+}
+
+.review-header {
+  margin-bottom: 1rem;
+}
+
+.proposal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.proposal-id {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.urgent-badge {
+  background: #dc3545;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.review-info {
+  margin-bottom: 1rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.info-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.info-value.overdue {
+  color: #dc3545;
+  font-weight: 700;
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.action-btn.evaluate {
+  background: var(--primary);
+  color: white;
+}
+
+.action-btn.evaluate:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.action-btn.view {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.action-btn.view:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.btn-icon {
+  font-size: 1rem;
+}
+
+/* Sección de historial */
+.history-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.history-link:hover {
+  background: var(--primary-dark);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.history-preview {
+  text-align: center;
+  padding: 2rem;
+}
+
+.preview-text {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.preview-features {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.feature-icon {
+  font-size: 1.2rem;
+}
+
+/* Lista de recientes */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.recent-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.recent-item:hover {
+  box-shadow: var(--shadow);
+}
+
+.recent-info {
+  flex: 1;
+}
+
+.recent-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.recent-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.recent-decision {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.decision-approve { background: #d4edda; color: #155724; }
+.decision-reject { background: #f8d7da; color: #721c24; }
+.decision-request_changes { background: #fff3cd; color: #856404; }
+
+.recent-date {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.recent-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-small.view {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-small.view:hover {
+  background: var(--primary-dark);
+  color: white;
+}
+
+/* Estados vacíos */
+.empty-state, .empty-recent {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reviewer-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .preview-features {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .recent-item {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+}
+</style>
+{% endblock %}

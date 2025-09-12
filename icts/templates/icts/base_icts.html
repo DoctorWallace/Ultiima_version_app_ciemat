@@ -38,8 +38,21 @@
       .header{background:var(--bg-card);border-bottom:1px solid var(--border);padding:1rem 2rem;box-shadow:var(--shadow);position:sticky;top:0;z-index:100}
       .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
       .title{font-size:1.75rem;font-weight:900;margin:0}
+      .header-right{display:flex;align-items:center;gap:1rem}
       .logos{display:flex;align-items:center;gap:.75rem}
       .logos img{height:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08))}
+      
+      /* Chip de rol del usuario */
+      .user-role-chip{margin-right:1rem}
+      .role-badge{
+        padding:.5rem 1rem;border-radius:999px;font-size:.85rem;font-weight:700;
+        text-transform:uppercase;letter-spacing:.5px;box-shadow:var(--shadow-sm);
+        display:inline-flex;align-items:center;gap:.5rem
+      }
+      .role-usuario{background:linear-gradient(135deg,#6c757d,#495057);color:#fff}
+      .role-revisor{background:linear-gradient(135deg,#17a2b8,#138496);color:#fff}
+      .role-responsable{background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff}
+      .role-manager{background:linear-gradient(135deg,#fd7e14,#e8590c);color:#fff}
       .content{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:2rem}
       .card{background:var(--bg-card);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
       .footer{background:var(--bg-sidebar);color:rgba(255,255,255,.8);text-align:center;padding:1.25rem;margin-top:auto}
@@ -98,12 +111,28 @@
         <header class="header">
           <div class="header-inner">
             <h1 class="title">{% block page_title %}Σ SIGMA ICTS{% endblock %}</h1>
-            <div class="logos">
-              {% block header_right %}
-                <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
-                <img src="{{ MEDIA_URL }}Logos/sol_icts.png.jpg" alt="ICTS">
-                {# Si quieres acciones extras: {% include "icts/_topbar_actions.html" %} #}
-              {% endblock %}
+            <div class="header-right">
+              {% if user.is_authenticated %}
+                <div class="user-role-chip">
+                  {% if user.is_superuser %}
+                    <span class="role-badge role-manager">👑 MANAGER</span>
+                  {% elif user|has_group:"managers" %}
+                    <span class="role-badge role-manager">🛠️ MANAGER</span>
+                  {% elif user|has_group:"responsables" %}
+                    <span class="role-badge role-responsable">🧭 RESPONSABLE</span>
+                  {% elif user|has_group:"revisores" %}
+                    <span class="role-badge role-revisor">🔍 REVISOR</span>
+                  {% else %}
+                    <span class="role-badge role-usuario">👤 USUARIO</span>
+                  {% endif %}
+                </div>
+              {% endif %}
+              <div class="logos">
+                {% block header_right %}
+                  <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
+                  <img src="{{ MEDIA_URL }}Logos/sol_icts.png.jpg" alt="ICTS">
+                {% endblock %}
+              </div>
             </div>
           </div>
         </header>

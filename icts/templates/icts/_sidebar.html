@@ -13,14 +13,20 @@
 
       <!-- Panel principal del usuario -->
       <li><a href="{% url 'icts:user_dashboard' %}">🏠 Mi panel</a></li>
-      <li><a href="{% url 'icts:my_proposals' %}">📄 Mis propuestas</a></li>
-      <li><a href="{% url 'icts:proposal_create' %}">➕ Nueva propuesta</a></li>
+      
+      <!-- Solo usuarios normales (no revisores, responsables, managers) -->
+      {% if not user|has_group:"revisores" and not user|has_group:"responsables" and not user|has_group:"managers" and not user.is_superuser %}
+        <li><a href="{% url 'icts:my_proposals' %}">📄 Mis propuestas</a></li>
+        <li><a href="{% url 'icts:proposal_create' %}">➕ Nueva propuesta</a></li>
+      {% endif %}
 
       <li class="menu-sep"></li>
 
       <!-- Roles específicos -->
       {% if request.user|has_group:"revisores" %}
-        <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Propuestas a evaluar</a></li>
+        <li><a href="{% url 'icts:reviewer_dashboard_new' %}">📊 Mi Panel Revisor</a></li>
+        <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Bandeja de Entrada</a></li>
+        <li><a href="{% url 'icts:review_history' %}">📚 Historial</a></li>
       {% endif %}
 
       {% if request.user|has_group:"responsables" %}

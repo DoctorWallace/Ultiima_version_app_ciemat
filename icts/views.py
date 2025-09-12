@@ -41,7 +41,7 @@ def dashboard(request):
     if is_responsable(request.user):
         return redirect("icts:responsable_dashboard")
     if is_reviewer(request.user):
-        return redirect("icts:reviewer_inbox")
+        return redirect("icts:reviewer_dashboard_new")
     return redirect("icts:user_dashboard")
 
 
@@ -218,6 +218,108 @@ def reviewer_inbox(request):
     pending = AccessProposal.objects.filter(status="submitted").order_by("-created_at")
     mine = ProposalReview.objects.filter(reviewer=request.user).select_related("proposal")
     return render(request, "icts/reviewer_inbox.html", {"pending": pending, "mine": mine})
+
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_reviewer)
+@never_cache
+def reviewer_dashboard_new(request):
+    """Dashboard mejorado del revisor con estadísticas y plazos"""
+    from datetime import datetime, timedelta
+    
+    # Estadísticas básicas
+    pending_reviews = ProposalReview.objects.filter(
+        reviewer=request.user,
+        decision='pending'
+    ).select_related('proposal')
+    
+    completed_reviews = ProposalReview.objects.filter(
+        reviewer=request.user,
+        decision__in=['approve', 'reject', 'request_changes']
+    )
+    
+    # Contadores
+    pending_count = pending_reviews.count()
+    completed_count = completed_reviews.count()
+    approved_count = completed_reviews.filter(decision='approve').count()
+    rejected_count = completed_reviews.filter(decision='reject').count()
+    
+    # Revisiones pendientes con información de días
+    pending_with_days = []
+    for review in pending_reviews:
+        days_pending = (datetime.now().date() - review.proposal.created_at.date()).days
+        is_urgent = days_pending > 7  # Más de 7 días es urgente
+        pending_with_days.append({
+            'review': review,
+            'days_pending': days_pending,
+            'is_urgent': is_urgent
+        })
+    
+    urgent_count = sum(1 for item in pending_with_days if item['is_urgent'])
+    
+    # Revisiones recientes (últimas 5)
+    recent_reviews = completed_reviews.order_by('-updated_at')[:5]
+    
+    context = {
+        'pending_count': pending_count,
+        'completed_count': completed_count,
+        'approved_count': approved_count,
+        'rejected_count': rejected_count,
+        'urgent_count': urgent_count,
+        'pending_reviews': pending_with_days,
+        'recent_reviews': recent_reviews,
+    }
+    
+    return render(request, "icts/reviewer_dashboard_new.html", context)
+
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_reviewer)
+@never_cache
+def review_history(request):
+    """Historial de evaluaciones del revisor con filtros"""
+    from django.core.paginator import Paginator
+    from django.db.models import Q
+    
+    # Obtener todas las evaluaciones del revisor
+    reviews = ProposalReview.objects.filter(
+        reviewer=request.user
+    ).select_related('proposal', 'proposal__applicant').order_by('-updated_at')
+    
+    # Aplicar filtros
+    decision = request.GET.get('decision')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    search = request.GET.get('search')
+    
+    if decision:
+        reviews = reviews.filter(decision=decision)
+    
+    if date_from:
+        reviews = reviews.filter(updated_at__date__gte=date_from)
+    
+    if date_to:
+        reviews = reviews.filter(updated_at__date__lte=date_to)
+    
+    if search:
+        reviews = reviews.filter(
+            Q(proposal__title__icontains=search) |
+            Q(proposal__applicant__username__icontains=search) |
+            Q(proposal__applicant__first_name__icontains=search) |
+            Q(proposal__applicant__last_name__icontains=search)
+        )
+    
+    # Paginación
+    paginator = Paginator(reviews, 10)  # 10 evaluaciones por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'reviews': page_obj,
+        'total_reviews': reviews.count(),
+        'is_paginated': page_obj.has_other_pages(),
+        'page_obj': page_obj,
+    }
+    
+    return render(request, "icts/review_history.html", context)
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_responsable)

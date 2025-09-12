@@ -1,4 +1,5 @@
 {% extends "base_icts.html" %}
+{% load form_extras %}
 {% block title %}Mi Panel - SIGMA ICTS{% endblock %}
 {% block page_title %}Mi Panel de Usuario{% endblock %}
 
@@ -240,6 +241,7 @@
   font-weight: 600;
   transition: all 0.2s ease;
   box-shadow: var(--shadow);
+  cursor: pointer;
 }
 
 .action-btn.primary {
@@ -395,6 +397,7 @@
   font-weight: 500;
   transition: all 0.2s ease;
   border: 1px solid transparent;
+  cursor: pointer;
 }
 
 .btn-small.view {
