@@ -44,10 +44,12 @@
       <li class="menu-sep"></li>
       <li><a href="{% url 'accounts:logout' %}">🚪 Salir</a></li>
     {% else %}
-      <!-- Usuario anónimo: SOLO accesos básicos -->
+      <!-- Usuario anónimo: accesos comunes -->
       <li class="menu-sep"></li>
-      <li><a href="{% url 'accounts:login_icts' %}">🔐 Iniciar sesión</a></li>
+      <li><a href="{% url 'portal:home' %}">🏠 Portal SIGMA</a></li>
+      <li><a href="{% url 'accounts:login_icts' %}">🔐 Entrar</a></li>
       <li><a href="{% url 'icts:register' %}">📝 Registrarse</a></li>
+      <li><a href="{% url 'portal:faq' %}">❓ FAQ ICTS</a></li>
     {% endif %}
   </ul>
 </nav>
@@ -67,4 +69,3 @@
 .sidebar .menu a:hover{ background:rgba(255,255,255,.12); opacity:1; }
 .sidebar .menu .menu-sep{ border-top:1px solid rgba(255,255,255,.25); margin:.5rem 0; }
 </style>
-
