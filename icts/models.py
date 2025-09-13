@@ -164,7 +164,7 @@ class ICTSUserProfile(models.Model):
     center = models.CharField("Centro / Institución", max_length=150, blank=True)
     phone = models.CharField("Teléfono", max_length=30, blank=True)
     address = models.TextField("Dirección", blank=True)
-    user_siglas = models.CharField("Siglas usuario", max_length=10, blank=True, unique=True)
+    user_siglas = models.CharField("Siglas usuario", max_length=10, blank=True, null=True, unique=True)
     validated = models.BooleanField("Validado por responsable", default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
