@@ -107,7 +107,7 @@ def proposal_create(request):
 
         # Si no se renderiza el formset de adjuntos, no lo hacemos bloquear.
         # Detectamos la management form con el prefijo real del formset
-        has_attach_mgmt = "attachment-TOTAL_FORMS" in request.POST
+        has_attach_mgmt = f"{attachment_formset.prefix}-TOTAL_FORMS" in request.POST
 
         if form.is_valid() and formset.is_valid() and (attachment_formset.is_valid() if has_attach_mgmt else True):
             obj = form.save(commit=False)
