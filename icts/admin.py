@@ -21,7 +21,7 @@ class AccessProposalAdmin(admin.ModelAdmin):
 
 @admin.register(ICTSUserProfile)
 class ICTSUserProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "center", "phone", "validated", "created_at")
+    list_display = ("user", "user_siglas", "center", "phone", "validated", "created_at")
     search_fields = ("user__username", "user__email", "center", "phone")
     list_filter = ("validated", "created_at")
 
