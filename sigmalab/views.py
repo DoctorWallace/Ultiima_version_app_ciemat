@@ -35,6 +35,13 @@ def user_passes_test_dtf(test_func):
 
 
 # --- helpers de rol ---
+def is_technician_sl(user):
+    """Técnico S‑LAB (robusto a acentos/variantes)."""
+    return (
+        user.is_authenticated and (
+            user.is_superuser or user.groups.filter(name__icontains="S-LAB").exists()
+        )
+    )
 def is_technician(user):
     return (
         user.is_authenticated and (
@@ -51,7 +58,7 @@ def dashboard(request):
 
 # ---------- PANEL TÉCNICO ----------
 @login_required_dtf
-@user_passes_test_dtf(is_technician)
+@user_passes_test_dtf(is_technician_sl)
 def panel_tecnico(request):
     # Listas cortas para la portada (puedes ampliar el límite)
     pendientes  = Solicitud.objects.filter(estado="pendiente").select_related("solicitante")[:10]
@@ -152,7 +159,7 @@ def sample_create(request):
 
 # ---------- VISTA USUARIOS (para técnicos) ----------
 @login_required_dtf
-@user_passes_test(is_technician)
+@user_passes_test(is_technician_sl)
 def usuarios_overview(request):
     User = get_user_model()
     # Alta recientes y nº de solicitudes por usuario
@@ -166,3 +173,4 @@ def usuarios_overview(request):
         "usuarios": usuarios,
         "recientes": recientes,
     })
+
