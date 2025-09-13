@@ -1,0 +1,29 @@
+{% extends "base_dtf.html" %}
+{% block title %}{{ lab.name }} · Información{% endblock %}
+{% block page_title %}{{ lab.name }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:900px;margin:0 auto">
+  <div style="display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap">
+    <img src="{{ lab.logo }}" alt="{{ lab.name }}" style="height:88px;object-fit:contain">
+    <div>
+      <h3 style="margin:0 0 .25rem 0">{{ lab.name }}</h3>
+      <div class="muted">Contacto: <a href="mailto:{{ lab.email }}">{{ lab.email }}</a></div>
+    </div>
+  </div>
+
+  <hr style="margin:1rem 0;border:none;border-top:1px solid var(--border)">
+
+  <p>Esta página ofrece información básica del laboratorio. Próximamente añadiremos detalles de equipos, capacidades y condiciones de acceso.</p>
+
+  <ul style="margin-top:1rem">
+    <li>Equipo principal 1 (genérico)</li>
+    <li>Equipo principal 2 (genérico)</li>
+    <li>Equipo principal 3 (genérico)</li>
+  </ul>
+
+  <div style="margin-top:1rem">
+    <a class="nav-item" href="{% url 'accounts:login_dtf' %}?next={% url 'dtf:dashboard' %}">Entrar con cuenta DTF</a>
+  </div>
+</div>
+{% endblock %}
+

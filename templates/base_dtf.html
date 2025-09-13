@@ -92,6 +92,7 @@
         </div>
 
         <nav class="nav">
+          <a class="nav-item" href="{% url 'portal:home' %}">🏠 Salir al Portal</a>
           <a class="nav-item" href="{% url 'portal:home' %}">🏠 Mi Portal</a>
           <div class="nav-title">Navegación</div>
           <a class="nav-item" href="/">🏠 Portal SIGMA</a>
@@ -108,14 +109,12 @@
             <h1 class="title">{% block page_title %}Σ SIGMA DTF{% endblock %}</h1>
             <div class="logos">
               {% block top_right_logos %}
-                  {% if LAB_ROLE %}
-                <span class="role-badge {% if LAB_ROLE == 'TECNICO' %}tech{% else %}user{% endif %}">
-                 {{ LAB_ROLE }}
-                 </span>
+                {% if LAB_ROLE %}
+                  <span class="role-badge {% if LAB_ROLE == 'TECNICO' %}tech{% else %}user{% endif %}">{{ LAB_ROLE }}</span>
                 {% endif %}
-
-              <img src="/media/Logos/logo_sol.png" alt="LNF">
-              <img src="/media/Logos/sol_icts.png.jpg" alt="ICTS">
+                {% include "dtf/_topbar_actions.html" %}
+                <img src="/media/Logos/logo_sol.png" alt="LNF">
+                <img src="/media/Logos/sol_icts.png.jpg" alt="ICTS">
               {% endblock %}
             </div>
           </div>
@@ -143,3 +142,4 @@
     </script>
   </body>
 </html>
+

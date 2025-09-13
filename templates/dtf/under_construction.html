@@ -1,0 +1,13 @@
+{% extends "base_dtf.html" %}
+{% block title %}Sección en construcción{% endblock %}
+{% block page_title %}Sección en construcción{% endblock %}
+{% block content %}
+<div class="card" style="max-width:900px;margin:0 auto;text-align:center">
+  <h3>Próximamente</h3>
+  <p>La sección «{{ slug }}» está en construcción. Estamos trabajando para ofrecerte toda la información.</p>
+  <div style="margin-top:1rem">
+    <a class="nav-item" href="{% url 'dtf:dashboard' %}">Volver</a>
+  </div>
+</div>
+{% endblock %}
+
