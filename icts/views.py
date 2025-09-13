@@ -175,17 +175,23 @@ def proposal_edit(request, pk):
     if request.method == "POST":
         form = AccessProposalForm(request.POST, instance=obj)
         formset = ParticipantFormSet(request.POST, instance=obj)
-        # Edición sin adjuntos (se añadirá en el siguiente paso)
-        if form.is_valid() and formset.is_valid():
+        attachment_formset = AttachmentFormSet(request.POST, request.FILES, instance=obj)
+
+        has_attach_mgmt = f"{attachment_formset.prefix}-TOTAL_FORMS" in request.POST
+
+        if form.is_valid() and formset.is_valid() and (attachment_formset.is_valid() if has_attach_mgmt else True):
             form.save()
             formset.save()
+            if has_attach_mgmt:
+                attachment_formset.save()
             messages.success(request, "Borrador actualizado.")
             return redirect("icts:proposal_detail", pk=obj.pk)
     else:
         form = AccessProposalForm(instance=obj)
         formset = ParticipantFormSet(instance=obj)
+        attachment_formset = AttachmentFormSet(instance=obj)
 
-    return render(request, "icts/proposal_form.html", {"form": form, "formset": formset, "editing": True})
+    return render(request, "icts/proposal_form.html", {"form": form, "formset": formset, "attachment_formset": attachment_formset, "editing": True})
 
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_icts_user)
