@@ -4,18 +4,33 @@
 {% block page_title %}Detalle solicitud{% endblock %}
 {% block content %}
 <div class="card">
-  <h2 style="margin:0 0 .5rem">SOL#{{ solicitud.pk }} <span class="badge" style="margin-left:.5rem">{{ solicitud.get_estado_display }}</span></h2>
+  <h2 style="margin:0 0 .5rem">SOL#{{ solicitud.pk }} 
+    <span class="badge" style="margin-left:.5rem">{{ solicitud.get_estado_display }}</span>
+    {% if solicitud.autonomo %}
+      <span class="badge" style="margin-left:.5rem;background:#28a745;color:white;">Usuario Autónomo</span>
+    {% endif %}
+  </h2>
   <p><strong>Material:</strong> {{ solicitud.material }}</p>
   <p><strong>Procedencia:</strong> {{ solicitud.procedencia }}</p>
   <p><strong>Tratamiento previo:</strong> {{ solicitud.tratamiento_previo }}</p>
   <p><strong>Requisitos finales:</strong> {{ solicitud.requisitos_finales|linebreaksbr }}</p>
   <p><strong>Observaciones:</strong> {{ solicitud.observaciones|linebreaksbr }}</p>
-  <p><strong>Código muestra:</strong> {{ solicitud.codigo_muestra|default:"-" }}</p>
+  <p><strong>Código muestra:</strong> 
+    {% if solicitud.codigo_muestra %}
+      <span class="badge" style="background:#d1e7dd;color:#0f5132;font-weight:bold;">{{ solicitud.codigo_muestra }}</span>
+    {% else %}
+      <span class="badge" style="background:#f8d7da;color:#721c24;">Sin asignar</span>
+    {% endif %}
+  </p>
 
   <div style="margin:1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
     <a class="cta" href="{% url 'sigmalab:nuevo-avance' solicitud.pk %}"><i class="bi bi-plus-circle"></i> Añadir avance</a>
     {% if request.user.is_staff or request.user|has_group:"tecnico_responsable_s_lab" %}
       <a class="cta" href="{% url 'sigmalab:cambiar-estado' solicitud.pk %}" style="background:var(--accent)"><i class="bi bi-gear"></i> Cambiar estado</a>
+      <a class="cta" href="{% url 'sigmalab:toggle-autonomia' solicitud.pk %}" style="background:{% if solicitud.autonomo %}#dc3545{% else %}#28a745{% endif %}">
+        <i class="bi bi-{% if solicitud.autonomo %}person-x{% else %}person-check{% endif %}"></i> 
+        {% if solicitud.autonomo %}Desactivar{% else %}Activar{% endif %} autonomía
+      </a>
     {% endif %}
     {% if solicitud.autonomo and request.user == solicitud.solicitante or request.user|has_group:"tecnico_responsable_s_lab" %}
       <a class="cta" href="{% url 'sigmalab:diario-solicitud' solicitud.pk %}"><i class="bi bi-journal-text"></i> Registro diario</a>

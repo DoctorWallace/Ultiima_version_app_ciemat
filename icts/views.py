@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.db.models import Exists, OuterRef
 
 from .models import AccessProposal, ProposalReview
-from .utils import build_access_code, generate_user_siglas
+from .utils import build_access_code, generate_user_siglas, send_proposal_notification, send_user_approval_notification
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 def is_icts_user(user):
@@ -225,6 +225,10 @@ def proposal_submit(request, pk):
     if reviewers:
         for user in reviewers.user_set.all().distinct():
             ProposalReview.objects.get_or_create(proposal=obj, reviewer=user)
+
+    # Enviar notificaciones
+    send_proposal_notification(obj, 'submitted')
+    send_proposal_notification(obj, 'review_assigned')
 
     messages.success(request, "Propuesta enviada a revisión.")
     return redirect("icts:proposal_detail", pk=obj.pk)
@@ -557,6 +561,9 @@ def review_start(request, pk):
         form = ProposalReviewForm(request.POST, instance=review)
         if form.is_valid():
             form.save()
+            # Enviar notificación si la revisión está completa
+            if review.decision != 'pending':
+                send_proposal_notification(obj, 'review_completed')
             messages.success(request, "Revisión guardada.")
             return redirect("icts:reviewer_inbox")
         else:
@@ -596,6 +603,8 @@ def proposal_decide(request, pk):
             obj.access_code = build_access_code(obj, siglas)
             update_fields.append("access_code")
         obj.save(update_fields=update_fields)
+        # Enviar notificación de decisión final
+        send_proposal_notification(obj, 'decision_made')
         messages.success(request, f"Decisión final registrada: {obj.get_status_display()}.")
         return redirect("icts:proposal_detail", pk=obj.pk)
     return HttpResponseForbidden("Método no permitido")
@@ -708,6 +717,8 @@ def approve_user(request, user_id):
     else:
         user.is_active = True
         user.save()
+        # Enviar notificación de aprobación
+        send_user_approval_notification(user)
         messages.success(request, f"Usuario {user.username} ha sido aprobado y activado.")
     
     return redirect("icts:pending_users")

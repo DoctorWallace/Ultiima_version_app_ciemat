@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from .models import Solicitud
 from .forms import SolicitudForm, AvanceForm, EstadoForm
-from .utils import is_tecnico
+from .utils import is_tecnico, assign_sample_code, get_sample_code_display
 from .views import login_required_dtf, user_passes_test_dtf
 
 
@@ -117,9 +117,13 @@ def cambiar_estado(request, pk):
             if accion == "aceptar":
                 sol.estado = Solicitud.Estado.ACEPTADA
                 sol.aceptado_en = timezone.now()
+                # Asignar código automáticamente si no se proporciona uno
                 if codigo:
                     sol.codigo_muestra = codigo
-                messages.success(request, "Solicitud aceptada.")
+                else:
+                    # Generar código automáticamente
+                    sol.codigo_muestra = assign_sample_code(sol)
+                messages.success(request, f"Solicitud aceptada. Código asignado: {sol.codigo_muestra}")
             elif accion == "rechazar":
                 sol.estado = Solicitud.Estado.RECHAZADA
                 messages.warning(request, "Solicitud rechazada.")
