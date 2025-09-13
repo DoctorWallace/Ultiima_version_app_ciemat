@@ -9,7 +9,7 @@ from django.db.models import Count
 from django.contrib.auth import get_user_model
 
 from .models import Sample, Solicitud
-from .forms import SampleForm
+from .forms import SampleForm, DiarioEntradaForm
 
 from django.contrib.auth.decorators import login_required as _login_required, user_passes_test as _user_passes_test
 
@@ -91,6 +91,44 @@ def panel_usuario(request):
         "mias": mias,
         "recuento": recuento,
     })
+
+@login_required_dtf
+def diario_solicitud(request, pk):
+    sol = get_model_or_404(Solicitud, pk=pk) if False else None
+    try:
+        sol = Solicitud.objects.get(pk=pk)
+    except Solicitud.DoesNotExist:
+        return redirect("sigmalab:mis-solicitudes")
+    # Permisos: autor con autonomía o técnico
+    if not (sol.solicitante_id == request.user.id and sol.autonomo) and not is_technician(request.user):
+        messages.error(request, "No tienes permiso para registrar entradas de diario en esta solicitud.")
+        return redirect("sigmalab:detalle-solicitud", pk=pk)
+
+    if request.method == "POST":
+        form = DiarioEntradaForm(request.POST)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.solicitud = sol
+            entry.autor = request.user
+            entry.save()
+            messages.success(request, "Entrada registrada en el diario.")
+            return redirect("sigmalab:diario-solicitud", pk=pk)
+    else:
+        form = DiarioEntradaForm()
+
+    entradas = sol.diario.select_related("autor").all()
+    return render(request, "sigmalab/diario.html", {"solicitud": sol, "form": form, "entradas": entradas})
+
+@login_required_dtf
+@user_passes_test_dtf(is_technician)
+def toggle_autonomia(request, pk):
+    sol = Solicitud.objects.filter(pk=pk).first()
+    if not sol:
+        return redirect("sigmalab:todas-solicitudes")
+    sol.autonomo = not sol.autonomo
+    sol.save(update_fields=["autonomo"])
+    messages.success(request, f"Autonomía {'activada' if sol.autonomo else 'desactivada'} para la solicitud {sol.pk}.")
+    return redirect("sigmalab:detalle-solicitud", pk=pk)
 
 # ---------- VISTAS MUESTRAS (tuyas) ----------
 @login_required_dtf

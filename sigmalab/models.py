@@ -56,6 +56,7 @@ class Solicitud(models.Model):
     trat_termico = models.BooleanField(default=False)
 
     estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.PENDIENTE)
+    autonomo = models.BooleanField(default=False, help_text="Usuario validado como autónomo para esta solicitud")
     codigo_muestra = models.CharField(
         max_length=20, blank=True, null=True, help_text="Se puede asignar al aceptar (p.ej. 25-001)"
     )
@@ -93,3 +94,29 @@ class Avance(models.Model):
 
     def __str__(self):
         return f"[{self.get_tipo_display()}] {self.solicitud} - {self.creado_en:%Y-%m-%d %H:%M}"
+
+
+class DiarioEntrada(models.Model):
+    ETAPA = (
+        ("corte", "Corte"),
+        ("empastillado", "Empastillado"),
+        ("lijado", "Lijado"),
+        ("pulido", "Pulido"),
+        ("electropulido", "Electropulido"),
+        ("trat_quimico", "Tratamiento químico"),
+        ("trat_termico", "Tratamiento térmico"),
+        ("ensayo", "Ensayo máquina"),
+        ("otra", "Otra"),
+    )
+    solicitud = models.ForeignKey(Solicitud, on_delete=models.CASCADE, related_name="diario")
+    autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    fecha = models.DateField()
+    etapa = models.CharField(max_length=20, choices=ETAPA)
+    nota = models.TextField()
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-fecha", "-creado_en"]
+
+    def __str__(self):
+        return f"Diario {self.solicitud_id} {self.fecha} {self.etapa}"

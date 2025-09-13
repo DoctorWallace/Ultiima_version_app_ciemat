@@ -1,6 +1,6 @@
 from django import forms
 from .models import Sample
-from .models import Solicitud, Avance
+from .models import Solicitud, Avance, DiarioEntrada
 
 class SampleForm(forms.ModelForm):
     class Meta:
@@ -46,3 +46,14 @@ class EstadoForm(forms.Form):
     )
     accion = forms.ChoiceField(choices=ACCION)
     codigo_muestra = forms.CharField(required=False, max_length=20)
+
+
+class DiarioEntradaForm(forms.ModelForm):
+    class Meta:
+        model = DiarioEntrada
+        fields = ["fecha", "etapa", "nota"]
+        widgets = {
+            "fecha": forms.DateInput(attrs={"type": "date", "class": "form-input"}),
+            "etapa": forms.Select(attrs={"class": "form-input"}),
+            "nota": forms.Textarea(attrs={"rows": 4, "class": "form-input", "placeholder": "Anota incidencias, tareas realizadas, etc."}),
+        }

@@ -8,4 +8,4 @@ def ensure_mec_groups(sender, **kwargs):
     if sender.name != 'mec':
         return
     Group.objects.get_or_create(name="Tecnicos responsables S-MEC")
-
+    Group.objects.get_or_create(name="Tecnicos S-MEC")

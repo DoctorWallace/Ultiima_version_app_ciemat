@@ -25,6 +25,10 @@ urlpatterns = [
     path("requests/all/",   req.todas_solicitudes, name="todas-solicitudes"),
     path("requests/<int:pk>/estado/", req.cambiar_estado, name="cambiar-estado"),
 
+    # Diario de usuario autónomo
+    path("requests/<int:pk>/diario/", views.diario_solicitud, name="diario-solicitud"),
+    path("requests/<int:pk>/autonomia/", views.toggle_autonomia, name="toggle-autonomia"),
+
     # Usuarios (solo técnicos)
     path("usuarios/", views.usuarios_overview, name="usuarios-overview"),
 ]
