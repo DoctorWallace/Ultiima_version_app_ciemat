@@ -3,17 +3,22 @@
 {% block page_title %}Bandeja del técnico{% endblock %}
 {% block content %}
 <div class="card">
-  <h2 style="margin:0 0 .5rem">Solicitudes en curso</h2>
-  <ul>
+  <h2 style="margin:0 0 .75rem">Solicitudes en curso</h2>
+  <div class="list" style="display:flex;flex-direction:column;gap:.5rem">
     {% for s in solicitudes %}
-      <li>
-        <a href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }}</a>
-        - {{ s.get_estado_display }} - {{ s.creado_en|date:"Y-m-d H:i" }}
-        - {{ s.solicitante.username }}
-      </li>
+      <div class="item" style="display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:.5rem;padding:.6rem 1rem;background:var(--bg-card)">
+        <div>
+          <a class="recent-title" href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }}</a>
+          <span class="badge" style="margin-left:.5rem">{{ s.get_estado_display }}</span>
+          <div class="muted">{{ s.creado_en|date:"Y-m-d H:i" }} · {{ s.solicitante.username }}</div>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <a class="btn" href="{% url 'sigmalab:detalle-solicitud' s.pk %}">Ver</a>
+        </div>
+      </div>
     {% empty %}
-      <li>No hay solicitudes.</li>
+      <div class="muted">No hay solicitudes.</div>
     {% endfor %}
-  </ul>
+  </div>
 </div>
 {% endblock %}
