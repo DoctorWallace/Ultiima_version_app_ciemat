@@ -3,12 +3,22 @@
 {% block page_title %}Todas las solicitudes{% endblock %}
 {% block content %}
 <div class="card">
-  <ul>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem">
+    {% with se=selected_estado %}
+      <a class="chip" href="?" style="{% if not se %}background:#e6fffa;border-color:#b2f5ea{% endif %}">Todas</a>
+      <a class="chip" href="?estado=pendiente" style="{% if se=='pendiente' %}background:#fff3cd;border-color:#ffe69c{% endif %}">Pendientes</a>
+      <a class="chip" href="?estado=en_curso" style="{% if se=='en_curso' %}background:#cff4fc;border-color:#b6effb{% endif %}">En curso</a>
+      <a class="chip" href="?estado=aceptada" style="{% if se=='aceptada' %}background:#d1e7dd;border-color:#badbcc{% endif %}">Aceptadas</a>
+      <a class="chip" href="?estado=rechazada" style="{% if se=='rechazada' %}background:#f8d7da;border-color:#f5c2c7{% endif %}">Rechazadas</a>
+      <a class="chip" href="?estado=finalizada" style="{% if se=='finalizada' %}background:#e2e3e5;border-color:#d3d6d8{% endif %}">Finalizadas</a>
+    {% endwith %}
+  </div>
+  <ul style="margin-top:.5rem">
     {% for s in solicitudes %}
-      <li>
+      <li style="margin:.25rem 0">
         <a href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }}</a>
-        — {{ s.get_estado_display }} — {{ s.creado_en|date:"Y-m-d H:i" }}
-        — {{ s.solicitante.username }}
+        - {{ s.get_estado_display }} - {{ s.creado_en|date:"Y-m-d H:i" }}
+        - {{ s.solicitante.username }}
       </li>
     {% empty %}
       <li>No hay solicitudes.</li>
