@@ -8,7 +8,7 @@
       <strong>Estado:</strong> {{ solicitud.get_estado_display }}
       {% if solicitud.autonomo %}<span class="chip" style="margin-left:.5rem">Usuario autónomo</span>{% endif %}
     </div>
-    <a href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}" class="chip">⬅️ Volver</a>
+    <a href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}" class="chip">← Volver</a>
   </div>
 
   <form method="post" class="card" style="padding:1rem">
@@ -35,7 +35,7 @@
     <ul style="list-style:none;padding:0;margin:0">
       {% for e in entradas %}
         <li style="padding:.75rem 0;border-bottom:1px solid var(--border)">
-          <div><strong>{{ e.fecha }}</strong> · {{ e.get_etapa_display }} — {{ e.autor.get_username }}</div>
+          <div><strong>{{ e.fecha }}</strong> · {{ e.get_etapa_display }} - {{ e.autor.get_username }}</div>
           <div class="muted">{{ e.nota }}</div>
         </li>
       {% empty %}

@@ -1,9 +1,17 @@
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group
+
 
 def create_sigmalab_groups(sender, **kwargs):
-    # Crea (si faltan) los grupos
-    tecnicos, _ = Group.objects.get_or_create(name="Técnicos Σ-LAB")
-    usuarios, _ = Group.objects.get_or_create(name="Usuarios Σ-LAB")
-    # (Opcional) asigna permisos finos cuando tengas los modelos listos
-    # por ahora lo dejamos vacío; los checks los haremos por pertenencia al grupo
+    """Crea grupos canónicos para DTF con nombres homogéneos (ASCII)."""
+    names = [
+        # DTF comunes
+        "usuarios_dtf",
+        # Responsables por laboratorio
+        "tecnico_responsable_s_lab",
+        "tecnico_responsable_s_mec",
+        "tecnico_responsable_s_dp",
+        # Usuarios especiales
+        "usuarios_autonomo_s_lab",
+    ]
+    for name in names:
+        Group.objects.get_or_create(name=name)

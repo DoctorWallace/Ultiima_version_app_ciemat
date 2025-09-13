@@ -4,7 +4,7 @@
 <html lang="es">
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}Σ SIGMA DTF{% endblock %}</title>
+    <title>{% block title %}SIGMA DTF{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       :root{
@@ -54,12 +54,12 @@
         .toggle{display:block}
       }
       .role-badge{
-  display:inline-block; padding:.25rem .6rem; border-radius:999px; font-weight:700;
-  font-size:.8rem; letter-spacing:.02em; box-shadow:var(--shadow); margin-right:.5rem;
-  color:#fff;
-}
-.role-badge.tech{ background: #810dfd; }   /* azul técnico */
-.role-badge.user{ background: #871936; }   /* verde usuario */
+        display:inline-block; padding:.25rem .6rem; border-radius:999px; font-weight:700;
+        font-size:.8rem; letter-spacing:.02em; box-shadow:var(--shadow); margin-right:.5rem;
+        color:#fff;
+      }
+      .role-badge.tech{ background: #810dfd; }
+      .role-badge.user{ background: #871936; }
 
       /* Estilo de formularios (alineado con ICTS) */
       .form-input, textarea.form-input, select.form-input{
@@ -92,18 +92,18 @@
           <div class="slide" style="background-image:url('/media/sims_implant/Low-kV-implantation-.png')"><div class="overlay"><div class="banner-text">Implantación Baja Energía</div></div></div>
         </div>
 
-                <nav class="nav">
+        <nav class="nav">
           {% if request.user.is_authenticated %}
             <a class="nav-item" href="{% url 'portal:home' %}">🏠 Portal SIGMA</a>
             <div class="nav-title">Navegación</div>
-            <a class="nav-item" href="/dtf/">📊 DTF · Dashboard</a>
+            <a class="nav-item" href="/dtf/">📊 DTF – Dashboard</a>
             {% if request.user|has_group:'Técnicos S-LAB' and not request.user|has_group:'Técnicos responsables S-MEC' and not request.user|has_group:'Técnicos S-MEC' %}
-              <a class="nav-item" href="/dtf/lab/">🔬 S‑LAB</a>
+              <a class="nav-item" href="/dtf/lab/">🧪 S-LAB</a>
             {% elif request.user|has_group:'Técnicos responsables S-MEC' or request.user|has_group:'Técnicos S-MEC' %}
-              <a class="nav-item" href="/dtf/mec/">⚙️ S‑MEC</a>
+              <a class="nav-item" href="/dtf/mec/">🛠️ S-MEC</a>
             {% else %}
-              <a class="nav-item" href="/dtf/lab/">🔬 S‑LAB</a>
-              <a class="nav-item" href="/dtf/mec/">⚙️ S‑MEC</a>
+              <a class="nav-item" href="/dtf/lab/">🧪 S-LAB</a>
+              <a class="nav-item" href="/dtf/mec/">🛠️ S-MEC</a>
             {% endif %}
             <a class="nav-item" href="{% url 'portal:faq' %}">❓ FAQ DTF</a>
           {% else %}
@@ -118,7 +118,7 @@
       <main class="main">
         <header class="header">
           <div class="header-inner">
-            <h1 class="title">{% block page_title %}Σ SIGMA DTF{% endblock %}</h1>
+            <h1 class="title">{% block page_title %}SIGMA DTF{% endblock %}</h1>
             <div class="logos">
               {% block top_right_logos %}
                 {% if LAB_ROLE %}
@@ -137,7 +137,7 @@
         </section>
 
         <footer class="footer">
-          CIEMAT · División de Tecnologías para la Fusión — DTF
+          CIEMAT – División de Tecnologías para la Fusión - DTF
         </footer>
       </main>
     </div>
@@ -153,7 +153,4 @@
       {% block extra_js %}{% endblock %}
     </script>
   </body>
-</html>
-
-
-
+  </html>

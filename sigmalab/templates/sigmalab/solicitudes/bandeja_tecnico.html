@@ -8,8 +8,8 @@
     {% for s in solicitudes %}
       <li>
         <a href="{% url 'sigmalab:detalle-solicitud' s.pk %}">SOL#{{ s.pk }}</a>
-        — {{ s.get_estado_display }} — {{ s.creado_en|date:"Y-m-d H:i" }}
-        — {{ s.solicitante.username }}
+        - {{ s.get_estado_display }} - {{ s.creado_en|date:"Y-m-d H:i" }}
+        - {{ s.solicitante.username }}
       </li>
     {% empty %}
       <li>No hay solicitudes.</li>

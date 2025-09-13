@@ -6,8 +6,11 @@ def lab_role(request):
     """
     role = None
     if request.user.is_authenticated:
-        if (request.user.is_superuser
-            or request.user.groups.filter(name="Técnicos Σ-LAB").exists()):
+        if (
+            request.user.is_superuser
+            or request.user.is_staff
+            or request.user.groups.filter(name__startswith="tecnico_responsable_").exists()
+        ):
             role = "TECNICO"
         else:
             role = "USUARIO"
