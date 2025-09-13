@@ -1,0 +1,25 @@
+{% extends "base_dtf.html" %}
+{% block title %}S‑MEC · Mi panel{% endblock %}
+{% block page_title %}S‑MEC · Mi panel{% endblock %}
+{% block content %}
+<div class="card" style="display:flex;gap:.5rem;flex-wrap:wrap">
+  <a class="nav-item" style="display:inline-block" href="{% url 'mec:solicitud_create' %}">➕ Nueva solicitud</a>
+  <a class="nav-item" style="display:inline-block" href="{% url 'mec:sample_create' %}">🧪 Nueva muestra</a>
+  {% if request.user.is_superuser %}<a class="nav-item" href="{% url 'mec:panel_tecnico' %}">🧭 Panel técnico responsable</a>{% endif %}
+</div>
+
+<div class="card">
+  <h3 style="margin-bottom:.75rem">Mis solicitudes</h3>
+  <ul style="list-style:none;padding:0;margin:0">
+    {% for s in mias %}
+      <li style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
+        <div><strong>MEC#{{ s.id }}</strong> · {{ s.get_estado_display }}</div>
+        <div class="muted">{{ s.creado_en|date:"d/m/Y H:i" }}</div>
+      </li>
+    {% empty %}
+      <li>No tienes solicitudes todavía.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+

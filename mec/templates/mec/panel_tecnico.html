@@ -1,0 +1,38 @@
+{% extends "base_dtf.html" %}
+{% block title %}S‑MEC · Panel técnico responsable{% endblock %}
+{% block page_title %}S‑MEC · Panel técnico responsable{% endblock %}
+{% block content %}
+<div class="card">
+  <h3>Pendientes</h3>
+  <ul style="list-style:none;padding:0;margin:0">
+    {% for s in pendientes %}
+      <li style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">MEC#{{ s.id }} · {{ s.solicitante }}</li>
+    {% empty %}
+      <li>No hay pendientes.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Aceptadas</h3>
+  <ul style="list-style:none;padding:0;margin:0">
+    {% for s in aceptadas %}
+      <li style="padding:.5rem 0;border-bottom:1px solid var(--border)">MEC#{{ s.id }}</li>
+    {% empty %}
+      <li>—</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h3>Rechazadas</h3>
+  <ul style="list-style:none;padding:0;margin:0">
+    {% for s in rechazadas %}
+      <li style="padding:.5rem 0;border-bottom:1px solid var(--border)">MEC#{{ s.id }}</li>
+    {% empty %}
+      <li>—</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+

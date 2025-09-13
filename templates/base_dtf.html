@@ -60,6 +60,15 @@
 .role-badge.tech{ background: #810dfd; }   /* azul técnico */
 .role-badge.user{ background: #871936; }   /* verde usuario */
 
+      /* Estilo de formularios (alineado con ICTS) */
+      .form-input, textarea.form-input, select.form-input{
+        width:100%; padding:.9rem 1rem; border:2px solid var(--border); border-radius:.75rem;
+        background:var(--bg-card); box-shadow:var(--shadow-sm, 0 1px 2px rgba(0,0,0,.06)); transition: all .2s ease;
+      }
+      .form-input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(30,126,52,.15) }
+      .form-label{ display:block; margin-bottom:.5rem; font-weight:700; color:var(--text-primary) }
+      .form-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem }
+
       {% block extra_css %}{% endblock %}
     </style>
   </head>

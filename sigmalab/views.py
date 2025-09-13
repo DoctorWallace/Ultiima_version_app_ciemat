@@ -1,5 +1,7 @@
 # sigmalab/views.py
 from django.shortcuts import render, redirect
+from functools import wraps
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.utils import OperationalError, ProgrammingError
@@ -12,7 +14,20 @@ from .forms import SampleForm
 from django.contrib.auth.decorators import login_required as _login_required, user_passes_test as _user_passes_test
 
 def login_required_dtf(view):
-    return _login_required(login_url="/cuentas/login/dtf/")(view)
+    """Requiere autenticación y que la sesión sea del módulo DTF.
+
+    Evita que un usuario autenticado en ICTS aparezca como "logueado" en DTF
+    sin haber pasado por el login DTF. Si no está en módulo DTF, se redirige
+    al login específico conservando el "next".
+    """
+    @wraps(view)
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(f"{reverse('accounts:login_dtf')}?next=" + request.get_full_path())
+        if request.session.get("module") != "dtf":
+            return redirect(f"{reverse('accounts:login_dtf')}?next=" + request.get_full_path())
+        return view(request, *args, **kwargs)
+    return _wrapped
 
 def user_passes_test_dtf(test_func):
     return _user_passes_test(test_func, login_url="/cuentas/login/dtf/")

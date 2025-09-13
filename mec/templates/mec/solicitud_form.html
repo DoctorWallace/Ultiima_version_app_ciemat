@@ -1,0 +1,49 @@
+{% extends "base_dtf.html" %}
+{% block title %}S‑MEC · Nueva solicitud{% endblock %}
+{% block page_title %}S‑MEC · Nueva solicitud{% endblock %}
+{% block content %}
+<div class="card" style="max-width:1000px">
+  <form method="post">
+    {% csrf_token %}
+
+    <h3 style="margin-bottom:.75rem">Muestras</h3>
+    <div>
+      {{ form.muestras }}
+      <small class="muted">Selecciona una o varias muestras relacionadas</small>
+    </div>
+
+    <h3 style="margin:1rem 0 .5rem 0">Durómetro</h3>
+    <div class="form-row">
+      <div><label class="form-label">Usar durómetro</label> {{ form.equipo_durometro }}</div>
+      <div><label class="form-label">Carga</label> {{ form.durometro_carga }}</div>
+      <div><label class="form-label">Huellas (filas)</label> {{ form.durometro_huellas_filas }}</div>
+      <div><label class="form-label">Huellas (columnas)</label> {{ form.durometro_huellas_columnas }}</div>
+    </div>
+    <div>
+      <label class="form-label">Posición de ensayo</label>
+      {{ form.durometro_posicion }}
+    </div>
+
+    <h3 style="margin:1rem 0 .5rem 0">Máquina de ensayos</h3>
+    <div class="form-row">
+      <div><label class="form-label">Usar máquina</label> {{ form.equipo_maquina }}</div>
+      <div style="min-width:260px">
+        <label class="form-label">Tipo de ensayo</label>
+        {{ form.maquina_tipo }}
+      </div>
+    </div>
+
+    <div style="margin-top:1rem">
+      <label class="form-label">Observaciones</label>
+      {{ form.observaciones }}
+    </div>
+
+    <div style="margin-top:1rem">
+      <button class="nav-item" type="submit">Guardar</button>
+      <a class="nav-item" href="{% url 'mec:panel_usuario' %}">Cancelar</a>
+    </div>
+  </form>
+  {% if form.errors %}<pre>{{ form.errors }}</pre>{% endif %}
+</div>
+{% endblock %}
+
