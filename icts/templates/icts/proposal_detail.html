@@ -22,6 +22,12 @@
           <span class="meta-label">Creada:</span>
           <span class="meta-value">{{ obj.created_at|date:"d/m/Y H:i" }}</span>
         </div>
+        {% if obj.status == 'accepted' and obj.access_code %}
+        <div class="meta-item">
+          <span class="meta-label">Código de acceso:</span>
+          <span class="meta-value">{{ obj.access_code }}</span>
+        </div>
+        {% endif %}
       </div>
     </div>
     <div class="proposal-status-section">

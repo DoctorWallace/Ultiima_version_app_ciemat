@@ -112,7 +112,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 @user_passes_test(is_plain_icts_user)
 def proposal_create(request):
     if request.method == "POST":
-        form = AccessProposalForm(request.POST)
+        form = AccessProposalForm(request.POST, request=request)
         formset = ParticipantFormSet(request.POST)  # alias simple
         attachment_formset = AttachmentFormSet(request.POST, request.FILES)
 
@@ -143,7 +143,7 @@ def proposal_create(request):
         else:
             messages.error(request, "Corrige los errores del formulario.")
     else:
-        form = AccessProposalForm()
+        form = AccessProposalForm(request=request)
         formset = ParticipantFormSet()
         attachment_formset = AttachmentFormSet()
 
@@ -164,7 +164,8 @@ def proposal_detail(request, pk):
         return redirect("icts:dashboard")
 
     reviews = obj.reviews.select_related("reviewer").all()
-    can_decide = is_responsable(request.user) and obj.status == "submitted"
+    decided = obj.reviews.exclude(decision="pending").count()
+    can_decide = is_responsable(request.user) and obj.status == "submitted" and decided >= 4
 
     return render(
         request,
@@ -184,7 +185,7 @@ def proposal_edit(request, pk):
         return redirect("icts:proposal_detail", pk=obj.pk)
 
     if request.method == "POST":
-        form = AccessProposalForm(request.POST, instance=obj)
+        form = AccessProposalForm(request.POST, instance=obj, request=request)
         formset = ParticipantFormSet(request.POST, instance=obj)
         attachment_formset = AttachmentFormSet(request.POST, request.FILES, instance=obj)
 
@@ -198,7 +199,7 @@ def proposal_edit(request, pk):
             messages.success(request, "Borrador actualizado.")
             return redirect("icts:proposal_detail", pk=obj.pk)
     else:
-        form = AccessProposalForm(instance=obj)
+        form = AccessProposalForm(instance=obj, request=request)
         formset = ParticipantFormSet(instance=obj)
         attachment_formset = AttachmentFormSet(instance=obj)
 

@@ -16,6 +16,15 @@ User = get_user_model()
 # Formularios de PROPUESTA ICTS
 # -----------------------------
 class AccessProposalForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request", None)
+        super().__init__(*args, **kwargs)
+        # Limitar "previous_access" a propuestas propias ya aceptadas (o al menos del usuario)
+        if "previous_access" in self.fields:
+            qs = AccessProposal.objects.none()
+            if self.request and getattr(self.request, "user", None) and self.request.user.is_authenticated:
+                qs = AccessProposal.objects.filter(applicant=self.request.user)
+            self.fields["previous_access"].queryset = qs
     class Meta:
         model = AccessProposal
         fields = [
