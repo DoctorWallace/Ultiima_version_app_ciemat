@@ -33,6 +33,14 @@ def is_responsable(user):
 def is_manager(user):
     return user.is_superuser or user.groups.filter(name__iexact="managers").exists()
 
+def is_plain_icts_user(user):
+    """Usuario ICTS sin roles especiales (no revisor, no responsable, no manager)."""
+    return (
+        user.is_authenticated
+        and not (user.is_superuser or is_reviewer(user) or is_responsable(user) or is_manager(user))
+        and user.groups.filter(name__iexact="icts_users").exists()
+    )
+
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_icts_user)
 @never_cache
@@ -48,7 +56,9 @@ def dashboard(request):
 
 
 
-@login_required
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_plain_icts_user)
+@never_cache
 def icts_user_dashboard(request):
     """
     Panel del usuario: agrupa sus propuestas por estado.
@@ -87,7 +97,7 @@ class RegisterICTSView(FormView):
         return super().form_valid(form)
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(is_icts_user)
+@user_passes_test(is_plain_icts_user)
 @never_cache
 def my_proposals(request):
     qs = AccessProposal.objects.filter(applicant=request.user).order_by("-created_at")
@@ -99,7 +109,7 @@ def my_proposals(request):
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(is_icts_user)
+@user_passes_test(is_plain_icts_user)
 def proposal_create(request):
     if request.method == "POST":
         form = AccessProposalForm(request.POST)
@@ -165,7 +175,7 @@ def proposal_detail(request, pk):
 
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(is_icts_user)
+@user_passes_test(is_plain_icts_user)
 @never_cache
 def proposal_edit(request, pk):
     obj = get_object_or_404(AccessProposal, pk=pk, applicant=request.user)
@@ -195,7 +205,7 @@ def proposal_edit(request, pk):
     return render(request, "icts/proposal_form.html", {"form": form, "formset": formset, "attachment_formset": attachment_formset, "editing": True})
 
 @login_required(login_url="/accounts/login/icts/")
-@user_passes_test(is_icts_user)
+@user_passes_test(is_plain_icts_user)
 @never_cache
 def proposal_submit(request, pk):
     """Pasa de 'draft' a 'submitted' y crea tareas de revisión para TODOS los revisores."""
