@@ -7,5 +7,5 @@ from django.contrib.auth.models import Group
 def ensure_mec_groups(sender, **kwargs):
     if sender.name != 'mec':
         return
-    Group.objects.get_or_create(name="Tecnicos responsables S-MEC")
-    Group.objects.get_or_create(name="Tecnicos S-MEC")
+    # Grupos canónicos para S-MEC (DTF)
+    Group.objects.get_or_create(name="tecnico_responsable_s_mec")
