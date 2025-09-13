@@ -330,6 +330,21 @@ def review_history(request):
     
     return render(request, "icts/review_history.html", context)
 
+
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_reviewer)
+@never_cache
+def reviewer_mailbox(request):
+    """Stub de bandeja de entrada de mensajes (en desarrollo)."""
+    return render(request, "icts/reviewer_mailbox.html", {})
+
+
+@login_required(login_url="/accounts/login/icts/")
+@user_passes_test(is_reviewer)
+@never_cache
+def reviewer_faq(request):
+    return render(request, "icts/faq_reviewer.html")
+
 @login_required(login_url="/accounts/login/icts/")
 @user_passes_test(is_responsable)
 @never_cache

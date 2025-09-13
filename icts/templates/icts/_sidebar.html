@@ -3,32 +3,24 @@
 
 <nav class="sidebar">
   <ul class="menu">
-    <li><a href="{% url 'portal:home' %}">🏠 Mi Portal</a></li>
-    <li><a href="{% url 'portal:home' %}">🏠 Mi Portal</a></li>
-    <!-- Visibles SIEMPRE (anónimo o autenticado) -->
-    <li><a href="/icts/">🏠 Inicio</a></li>
-    <li><a href="{% url 'icts:proposal_evaluation' %}">🧭 Proposal evaluation procedure</a></li>
-    <li><a href="/faq/">❓ FAQ</a></li>
+    <!-- Primero: Mi panel para cualquier perfil -->
+    <li><a href="{% url 'icts:dashboard' %}">🏠 Mi panel</a></li>
 
     {% if request.user.is_authenticated %}
       <li class="menu-sep"></li>
 
-      <!-- Panel principal del usuario -->
-      <li><a href="{% url 'icts:dashboard' %}">🏠 Mi panel</a></li>
-      
-      <!-- Solo usuarios normales (no revisores, responsables, managers) -->
+      <!-- Usuario estándar (no revisor, no responsable, no manager) -->
       {% if not user|has_group:"revisores" and not user|has_group:"responsables" and not user|has_group:"managers" and not user.is_superuser %}
-        <li><a href="{% url 'icts:my_proposals' %}">📄 Mis propuestas</a></li>
+        <li><a href="{% url 'icts:my_proposals' %}">🗂️ Mis propuestas</a></li>
         <li><a href="{% url 'icts:proposal_create' %}">➕ Nueva propuesta</a></li>
       {% endif %}
 
-      <li class="menu-sep"></li>
-
-      <!-- Roles específicos -->
+      <!-- Opciones específicas de REVISOR -->
       {% if request.user|has_group:"revisores" %}
-        <li><a href="{% url 'icts:reviewer_dashboard_new' %}">📊 Mi Panel Revisor</a></li>
-        <li><a href="{% url 'icts:reviewer_inbox' %}">🗂️ Bandeja de Entrada</a></li>
-        <li><a href="{% url 'icts:review_history' %}">📚 Historial</a></li>
+        <li><a href="{% url 'icts:reviewer_dashboard_new' %}">📋 Mi panel revisor</a></li>
+        <li><a href="{% url 'icts:reviewer_inbox' %}">🧾 Evaluaciones pendientes</a></li>
+        <li><a href="{% url 'icts:review_history' %}">🕓 Historial de evaluaciones</a></li>
+        <li><a href="{% url 'icts:reviewer_mailbox' %}">📬 Bandeja de entrada</a></li>
       {% endif %}
 
       {% if request.user|has_group:"responsables" %}
@@ -36,7 +28,7 @@
       {% endif %}
 
       {% if request.user|has_group:"managers" %}
-        <li><a href="{% url 'icts:manager_dashboard' %}">🛠️ Panel manager</a></li>
+        <li><a href="{% url 'icts:manager_dashboard' %}">📊 Panel manager</a></li>
       {% endif %}
 
       {% if request.user.is_superuser %}
@@ -44,7 +36,13 @@
       {% endif %}
 
       <li class="menu-sep"></li>
-      <li><a href="{% url 'accounts:logout' %}">↩️ Salir</a></li>
+      <!-- Bloque inferior común -->
+      <li><a href="{% url 'portal:home' %}">🏠 Mi Portal</a></li>
+      <li><a href="{% url 'icts:proposal_evaluation' %}">📑 Proposal Evaluation Procedure</a></li>
+      <li><a href="{% url 'icts:reviewer_faq' %}">❓ FAQ Revisor</a></li>
+
+      <li class="menu-sep"></li>
+      <li><a href="{% url 'accounts:logout' %}">🚪 Salir</a></li>
     {% else %}
       <!-- Usuario anónimo: SOLO accesos básicos -->
       <li class="menu-sep"></li>
@@ -63,16 +61,10 @@
   padding:.55rem .9rem;
   border-radius:.5rem;
   text-decoration:none;
-  color:#fff;                      /* ← blanco fijo */
+  color:#fff;
   opacity:.92;
 }
-.sidebar .menu a:hover{
-  background:rgba(255,255,255,.12);
-  opacity:1;
-}
-.sidebar .menu .menu-sep{
-  border-top:1px solid rgba(255,255,255,.25);
-  margin:.5rem 0;
-}
-
+.sidebar .menu a:hover{ background:rgba(255,255,255,.12); opacity:1; }
+.sidebar .menu .menu-sep{ border-top:1px solid rgba(255,255,255,.25); margin:.5rem 0; }
 </style>
+
