@@ -5,8 +5,8 @@
 {% block content %}
 <div class="card" style="margin-bottom:1rem;">
   <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-    <a class="cta" href="{% url 'sigmalab:nueva-solicitud' %}"><i class="bi bi-plus-circle"></i> Nueva solicitud</a>
-    <a class="cta" href="{% url 'sigmalab:mis-solicitudes' %}" style="background:var(--accent)"><i class="bi bi-person-lines-fill"></i> Mis solicitudes</a>
+    <a class="btn" href="{% url 'sigmalab:nueva-solicitud' %}"><i class="bi bi-plus-circle"></i> Nueva solicitud</a>
+    <a class="btn btn-secondary" href="{% url 'sigmalab:mis-solicitudes' %}"><i class="bi bi-person-lines-fill"></i> Mis solicitudes</a>
   </div>
 </div>
 
@@ -25,8 +25,7 @@
     {% for s in mias %}
       <li>
         #{{ s.id }} · {{ s.get_estado_display }} · {{ s.creado_en|date:"Y-m-d H:i" }}
-        <a class="cta" style="padding:.15rem .5rem; margin-left:.25rem;"
-           href="{% url 'sigmalab:detalle-solicitud' s.id %}">Ver</a>
+        <a class="btn-small" style="margin-left:.25rem;" href="{% url 'sigmalab:detalle-solicitud' s.id %}"><i class="bi bi-eye"></i> Ver</a>
       </li>
     {% empty %}
       <li>No tienes solicitudes.</li>

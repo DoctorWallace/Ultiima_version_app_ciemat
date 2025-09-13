@@ -3,9 +3,9 @@
 {% block page_title %}S‑MEC · Mi panel{% endblock %}
 {% block content %}
 <div class="card" style="display:flex;gap:.5rem;flex-wrap:wrap">
-  <a class="nav-item" style="display:inline-block" href="{% url 'mec:solicitud_create' %}">➕ Nueva solicitud</a>
-  <a class="nav-item" style="display:inline-block" href="{% url 'mec:sample_create' %}">🧪 Nueva muestra</a>
-  {% if request.user.is_superuser %}<a class="nav-item" href="{% url 'mec:panel_tecnico' %}">🧭 Panel técnico responsable</a>{% endif %}
+  <a class="btn" href="{% url 'mec:solicitud_create' %}">➕ Nueva solicitud</a>
+  <a class="btn" href="{% url 'mec:sample_create' %}">🧪 Nueva muestra</a>
+  {% if request.user.is_superuser %}<a class="btn" href="{% url 'mec:panel_tecnico' %}">🧭 Panel técnico responsable</a>{% endif %}
 </div>
 
 <div class="card">

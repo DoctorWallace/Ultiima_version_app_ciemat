@@ -6,9 +6,9 @@
 <div class="card" style="margin-bottom:1rem;">
   <div style="display:flex; gap:.5rem; flex-wrap:wrap;align-items:center;justify-content:space-between">
     <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-      <a class="cta" href="{% url 'sigmalab:bandeja-tecnico' %}"><i class="bi bi-inbox"></i> Bandeja</a>
-      <a class="cta" href="{% url 'sigmalab:todas-solicitudes' %}" style="background:var(--accent)"><i class="bi bi-list-check"></i> Todas</a>
-      <a class="cta" href="{% url 'sigmalab:usuarios-overview' %}"><i class="bi bi-people"></i> Usuarios</a>
+      <a class="btn" href="{% url 'sigmalab:bandeja-tecnico' %}"><i class="bi bi-inbox"></i> Bandeja</a>
+      <a class="btn btn-secondary" href="{% url 'sigmalab:todas-solicitudes' %}"><i class="bi bi-list-check"></i> Todas</a>
+      <a class="btn" href="{% url 'sigmalab:usuarios-overview' %}"><i class="bi bi-people"></i> Usuarios</a>
     </div>
     <div class="chip" style="background:#eef2ff;border-color:#c7d2fe">Panel de técnico S-LAB</div>
   </div>
@@ -56,8 +56,6 @@
 .recent-item{display:flex;justify-content:space-between;gap:1rem;align-items:center;border:1px solid var(--border);border-radius:.5rem;padding:1rem;background:var(--bg-main)}
 .recent-title{font-weight:700}
 .recent-meta{color:#4a5568}
-.badge{padding:.25rem .5rem;border-radius:.35rem;background:#eef2ff}
-.btn{display:inline-block;background:var(--primary);color:#fff;text-decoration:none;padding:.5rem 1rem;border-radius:.35rem;font-weight:700}
-.btn:hover{background:var(--primary-dark)}
+ .badge{padding:.25rem .5rem;border-radius:.35rem;background:#eef2ff}
 </style>
 {% endblock %}
