@@ -61,7 +61,7 @@ def icts_user_dashboard(request):
 
     reviewed_qs = ProposalReview.objects.filter(
         proposal=OuterRef("pk"),
-        decision__isnull=False
+        decision__in=["approve", "reject", "request_changes"]
     )
     evaluated = qs.annotate(has_review=Exists(reviewed_qs)).filter(has_review=True)
 
@@ -106,6 +106,7 @@ def proposal_create(request):
         attachment_formset = AttachmentFormSet(request.POST, request.FILES)
 
         # Si no se renderiza el formset de adjuntos, no lo hacemos bloquear.
+        # Detectamos la management form con el prefijo real del formset
         has_attach_mgmt = "attachment-TOTAL_FORMS" in request.POST
 
         if form.is_valid() and formset.is_valid() and (attachment_formset.is_valid() if has_attach_mgmt else True):
@@ -174,6 +175,7 @@ def proposal_edit(request, pk):
     if request.method == "POST":
         form = AccessProposalForm(request.POST, instance=obj)
         formset = ParticipantFormSet(request.POST, instance=obj)
+        # Edición sin adjuntos (se añadirá en el siguiente paso)
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
@@ -698,5 +700,3 @@ def facility_info(request, slug):
 @never_cache
 def proposal_evaluation(request):
     return render(request, "icts/proposal_evaluation.html")
-
-
