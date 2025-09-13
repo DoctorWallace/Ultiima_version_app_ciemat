@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test as _user_passes_test
 from django.urls import reverse
 
-from .models import MecSample, MecSolicitud
+from .models import MecSample, MecSolicitud, MecMuestraNombre
 from .forms import MecSampleForm, MecSolicitudForm
 
 
@@ -20,7 +20,7 @@ def login_required_dtf(view):
 
 def is_tecnico_responsable(user):
     return user.is_authenticated and (
-        user.is_superuser or user.groups.filter(name__iexact="Tecnicos responsables S-MEC").exists()
+        user.is_superuser or user.groups.filter(name="tecnico_responsable_s_mec").exists()
     )
 
 
@@ -66,10 +66,13 @@ def solicitud_create(request):
             obj = form.save(commit=False)
             obj.solicitante = request.user
             obj.save()
-            form.save_m2m()
+            # Guardar denominaciones de muestras
+            for nombre in request.POST.getlist('nombres[]'):
+                nombre = (nombre or "").strip()
+                if nombre:
+                    MecMuestraNombre.objects.create(solicitud=obj, nombre=nombre)
             messages.success(request, "Solicitud creada.")
             return redirect("mec:panel_usuario")
     else:
         form = MecSolicitudForm()
     return render(request, "mec/solicitud_form.html", {"form": form})
-

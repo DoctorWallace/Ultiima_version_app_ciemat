@@ -1,40 +1,97 @@
 {% extends "base_dtf.html" %}
-{% block title %}S‑MEC · Nueva solicitud{% endblock %}
-{% block page_title %}S‑MEC · Nueva solicitud{% endblock %}
+{% block title %}S-MEC · Nueva solicitud{% endblock %}
+{% block page_title %}S-MEC · Nueva solicitud{% endblock %}
 {% block content %}
 <div class="card" style="max-width:1000px">
   <form method="post">
     {% csrf_token %}
 
-    <h3 style="margin-bottom:.75rem">Muestras</h3>
+    <h3>Datos generales</h3>
+    <div class="form-row">
+      <div>
+        <label class="form-label">Material</label>
+        {{ form.material }}
+      </div>
+      <div>
+        <label class="form-label">Procedencia</label>
+        {{ form.procedencia }}
+      </div>
+      <div>
+        <label class="form-label">Número de muestras</label>
+        {{ form.numero_muestras }}
+      </div>
+    </div>
     <div>
-      {{ form.muestras }}
-      <small class="muted">Selecciona una o varias muestras relacionadas</small>
+      <label class="form-label">Tratamientos</label>
+      {{ form.tratamientos }}
     </div>
 
-    <h3 style="margin:1rem 0 .5rem 0">Durómetro</h3>
-    <div class="form-row">
-      <div><label class="form-label">Usar durómetro</label> {{ form.equipo_durometro }}</div>
-      <div><label class="form-label">Carga</label> {{ form.durometro_carga }}</div>
-      <div><label class="form-label">Huellas (filas)</label> {{ form.durometro_huellas_filas }}</div>
-      <div><label class="form-label">Huellas (columnas)</label> {{ form.durometro_huellas_columnas }}</div>
+    <h3 style="margin-top:1rem">Denominación de las muestras</h3>
+    <div id="nombres-wrap" style="display:flex;flex-direction:column;gap:.5rem">
+      <div><input class="form-input" type="text" name="nombres[]" placeholder="Nombre de la muestra"></div>
     </div>
-    <div>
-      <label class="form-label">Posición de ensayo</label>
-      {{ form.durometro_posicion }}
+    <button class="cta" type="button" id="add-nombre" style="margin-top:.5rem">➕ Añadir otra muestra</button>
+
+    <h3 style="margin-top:1rem">Ensayos</h3>
+
+    <div class="card" style="border-color:#e9ecef">
+      <label class="form-label" style="display:flex;align-items:center;gap:.5rem">{{ form.ensayo_dureza }} Dureza</label>
+      <div id="seccion-dureza" style="display:none" class="form-row">
+        <div><label class="form-label">Carga</label>{{ form.dureza_carga }}</div>
+        <div><label class="form-label">Huellas (filas)</label>{{ form.dureza_huellas_filas }}</div>
+        <div><label class="form-label">Huellas (columnas)</label>{{ form.dureza_huellas_columnas }}</div>
+      </div>
     </div>
 
-    <h3 style="margin:1rem 0 .5rem 0">Máquina de ensayos</h3>
-    <div class="form-row">
-      <div><label class="form-label">Usar máquina</label> {{ form.equipo_maquina }}</div>
-      <div style="min-width:260px">
-        <label class="form-label">Tipo de ensayo</label>
-        {{ form.maquina_tipo }}
+    <div class="card" style="border-color:#e9ecef">
+      <label class="form-label" style="display:flex;align-items:center;gap:.5rem">{{ form.ensayo_traccion }} Tracción</label>
+      <div id="seccion-traccion" style="display:none">
+        <div><label class="form-label">Temperatura por muestra</label>{{ form.traccion_temperatura }}</div>
+        <div class="form-row">
+          <div><label class="form-label">Velocidad de deformación (s⁻¹)</label>{{ form.traccion_velocidad_deformacion }}</div>
+          <div><label class="form-label">Diámetro</label>{{ form.traccion_diametro }}</div>
+          <div><label class="form-label">Longitud entre marcas</label>{{ form.traccion_longitud_marca }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#e9ecef">
+      <label class="form-label" style="display:flex;align-items:center;gap:.5rem">{{ form.ensayo_fatiga }} Fatiga</label>
+      <div id="seccion-fatiga" style="display:none">
+        <div class="form-row">
+          <div><label class="form-label">Temperatura</label>{{ form.fatiga_temperatura }}</div>
+          <div><label class="form-label">% Deformación</label>{{ form.fatiga_porcentaje_deformacion }}</div>
+          <div><label class="form-label">Frecuencia</label>{{ form.fatiga_frecuencia }}</div>
+        </div>
+        <div class="form-row">
+          <div><label class="form-label">ε máx</label>{{ form.fatiga_eps_max }}</div>
+          <div><label class="form-label">ε mín</label>{{ form.fatiga_eps_min }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#e9ecef">
+      <label class="form-label" style="display:flex;align-items:center;gap:.5rem">{{ form.ensayo_creep_fatiga }} Creep-Fatiga</label>
+      <div id="seccion-creep" style="display:none">
+        <div class="form-row">
+          <div><label class="form-label">Temperatura</label>{{ form.creep_temperatura }}</div>
+          <div><label class="form-label">% Deformación</label>{{ form.creep_porcentaje_deformacion }}</div>
+          <div><label class="form-label">Frecuencia</label>{{ form.creep_frecuencia }}</div>
+        </div>
+        <div class="form-row">
+          <div><label class="form-label">ε máx</label>{{ form.creep_eps_max }}</div>
+          <div><label class="form-label">ε mín</label>{{ form.creep_eps_min }}</div>
+        </div>
+        <div class="form-row">
+          <div><label class="form-label">Mantenimiento (carga/deformación)</label>{{ form.creep_mantenimiento_tipo }}</div>
+          <div><label class="form-label">En (máxima/mínima)</label>{{ form.creep_mantenimiento_en }}</div>
+          <div><label class="form-label">Tiempo mantenimiento (s)</label>{{ form.creep_tiempo_mantenimiento_s }}</div>
+        </div>
       </div>
     </div>
 
     <div style="margin-top:1rem">
-      <label class="form-label">Observaciones</label>
+      <label class="form-label">Anotaciones</label>
       {{ form.observaciones }}
     </div>
 
@@ -45,5 +102,31 @@
   </form>
   {% if form.errors %}<pre>{{ form.errors }}</pre>{% endif %}
 </div>
+
+<script>
+(function(){
+  const byId = id => document.getElementById(id);
+  function toggler(chkId, secId){
+    const c = byId(chkId), s = byId(secId);
+    if(!c||!s) return;
+    function t(){ s.style.display = c.checked ? 'block' : 'none'; }
+    c.addEventListener('change', t); t();
+  }
+  toggler('id_ensayo_dureza', 'seccion-dureza');
+  toggler('id_ensayo_traccion', 'seccion-traccion');
+  toggler('id_ensayo_fatiga', 'seccion-fatiga');
+  toggler('id_ensayo_creep_fatiga', 'seccion-creep');
+
+  const addBtn = document.getElementById('add-nombre');
+  const wrap = document.getElementById('nombres-wrap');
+  if(addBtn && wrap){
+    addBtn.addEventListener('click', function(){
+      const div = document.createElement('div');
+      div.innerHTML = '<input class="form-input" type="text" name="nombres[]" placeholder="Nombre de la muestra">';
+      wrap.appendChild(div);
+    });
+  }
+})();
+</script>
 {% endblock %}
 
