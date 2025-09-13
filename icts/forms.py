@@ -35,7 +35,10 @@ class AccessProposalForm(forms.ModelForm):
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "contact@example.com"}),
             "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone number"}),
             "project_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Project name"}),
-            "project_type": forms.TextInput(attrs={"class": "form-control", "placeholder": "International, European, National, Regional"}),
+            "project_type": forms.Select(
+                choices=AccessProposal.PROJECT_TYPE_CHOICES,
+                attrs={"class": "form-select"}
+            ),
             "funding_source": forms.TextInput(attrs={"class": "form-control", "placeholder": "Funding source"}),
             "start_year": forms.NumberInput(attrs={"class": "form-control", "placeholder": "2024"}),
             "end_year": forms.NumberInput(attrs={"class": "form-control", "placeholder": "2025"}),

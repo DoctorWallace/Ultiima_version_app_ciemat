@@ -14,6 +14,12 @@ class Facility(models.Model):
 
 
 class AccessProposal(models.Model):
+    PROJECT_TYPE_CHOICES = [
+        ("international", "International"),
+        ("european", "European"),
+        ("national", "National"),
+        ("regional", "Regional"),
+    ]
     STATUS_CHOICES = [
         ("draft", "Draft"),
         ("submitted", "Submitted"),
@@ -53,7 +59,12 @@ class AccessProposal(models.Model):
     
     # Información del proyecto de financiación
     project_name = models.CharField(max_length=200, blank=True)
-    project_type = models.CharField(max_length=100, blank=True, help_text="International, European, National, Regional")
+    project_type = models.CharField(
+        max_length=100,
+        blank=True,
+        choices=PROJECT_TYPE_CHOICES,
+        help_text="International, European, National, Regional",
+    )
     funding_source = models.CharField(max_length=200, blank=True)
     start_year = models.IntegerField(null=True, blank=True)
     end_year = models.IntegerField(null=True, blank=True)
