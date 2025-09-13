@@ -11,12 +11,12 @@
     <div class="form-row">
       <div>
         <label class="form-label">Nombre de usuario</label>
-        {{ form.username|add_class:"form-input"|add_attr:"autocomplete:username" }}
+        {{ form.username|form_input:"autocomplete:username" }}
         {{ form.username.errors }}
       </div>
       <div>
         <label class="form-label">Correo electrónico</label>
-        {{ form.email|add_class:"form-input"|add_attr:"id:email"|add_attr:"autocomplete:email" }}
+        {{ form.email|form_input:"autocomplete:email" }}
         {{ form.email.errors }}
       </div>
     </div>
@@ -24,12 +24,12 @@
     <div class="form-row">
       <div>
         <label class="form-label">Nombre</label>
-        {{ form.first_name|add_class:"form-input"|add_attr:"autocomplete:given-name" }}
+        {{ form.first_name|form_input:"autocomplete:given-name" }}
         {{ form.first_name.errors }}
       </div>
       <div>
         <label class="form-label">Apellidos</label>
-        {{ form.last_name|add_class:"form-input"|add_attr:"autocomplete:family-name" }}
+        {{ form.last_name|form_input:"autocomplete:family-name" }}
         {{ form.last_name.errors }}
       </div>
     </div>
@@ -37,12 +37,12 @@
     <div class="form-row">
       <div>
         <label class="form-label">Contraseña</label>
-        {{ form.password1|add_class:"form-input"|add_attr:"autocomplete:new-password" }}
+        {{ form.password1|form_input:"autocomplete:new-password" }}
         {{ form.password1.errors }}
       </div>
       <div>
         <label class="form-label">Repetir contraseña</label>
-        {{ form.password2|add_class:"form-input"|add_attr:"autocomplete:new-password" }}
+        {{ form.password2|form_input:"autocomplete:new-password" }}
         {{ form.password2.errors }}
       </div>
     </div>
@@ -53,17 +53,17 @@
       <div class="form-row">
         <div>
           <label class="form-label">Departamento / Unidad</label>
-          {{ form.departamento|add_class:"form-input"|add_attr:"id:departamento" }}
+          {{ form.departamento|form_input }}
           {{ form.departamento.errors }}
         </div>
         <div>
           <label class="form-label">Matrícula</label>
-          {{ form.matricula|add_class:"form-input"|add_attr:"id:matricula" }}
+          {{ form.matricula|form_input }}
           {{ form.matricula.errors }}
         </div>
         <div>
           <label class="form-label">Teléfono interno</label>
-          {{ form.telefono_interno|add_class:"form-input"|add_attr:"id:telefono_interno" }}
+          {{ form.telefono_interno|form_input }}
           {{ form.telefono_interno.errors }}
         </div>
       </div>
