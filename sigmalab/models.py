@@ -17,16 +17,16 @@ class Sample(models.Model):
         verbose_name_plural = "Muestras"
 
     def __str__(self):
-        return f"{self.code} · {self.title}"
+        return f"{self.code} – {self.title}"
 
 
 # ========= Solicitudes (port de labrequest) =========
 class Solicitud(models.Model):
     class Estado(models.TextChoices):
-        PENDIENTE  = "pendiente",  "Pendiente"
-        ACEPTADA   = "aceptada",   "Aceptada"
-        RECHAZADA  = "rechazada",  "Rechazada"
-        EN_CURSO   = "en_curso",   "En curso"
+        PENDIENTE = "pendiente", "Pendiente"
+        ACEPTADA = "aceptada", "Aceptada"
+        RECHAZADA = "rechazada", "Rechazada"
+        EN_CURSO = "en_curso", "En curso"
         FINALIZADA = "finalizada", "Finalizada"
 
     solicitante = models.ForeignKey(
@@ -56,7 +56,9 @@ class Solicitud(models.Model):
     trat_termico = models.BooleanField(default=False)
 
     estado = models.CharField(max_length=20, choices=Estado.choices, default=Estado.PENDIENTE)
-    autonomo = models.BooleanField(default=False, help_text="Usuario validado como autónomo para esta solicitud")
+    autonomo = models.BooleanField(
+        default=False, help_text="Usuario validado como autónomo para esta solicitud"
+    )
     codigo_muestra = models.CharField(
         max_length=20, blank=True, null=True, help_text="Se puede asignar al aceptar (p.ej. 25-001)"
     )
@@ -72,7 +74,7 @@ class Solicitud(models.Model):
         verbose_name_plural = "Solicitudes"
 
     def __str__(self):
-        return f"SOL#{self.pk or '-'} · {self.solicitante} · {self.estado}"
+        return f"SOL#{self.pk or '-'} – {self.solicitante} – {self.estado}"
 
 
 class Avance(models.Model):
@@ -120,3 +122,4 @@ class DiarioEntrada(models.Model):
 
     def __str__(self):
         return f"Diario {self.solicitud_id} {self.fecha} {self.etapa}"
+
