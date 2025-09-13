@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from .models import AccessProposal, Participant, ICTSUserProfile, ProposalAttachment, ProposalReview
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -56,9 +57,46 @@ ParticipantFormSet = inlineformset_factory(
     can_delete=True,
 )
 
+# Validación de adjuntos (tamaño y tipo)
+class ProposalAttachmentForm(forms.ModelForm):
+    class Meta:
+        model = ProposalAttachment
+        fields = ["name", "file"]
+
+    def clean_file(self):
+        f = self.cleaned_data.get("file")
+        if not f:
+            return f
+        max_mb = 10
+        if getattr(f, "size", 0) > max_mb * 1024 * 1024:
+            raise forms.ValidationError(f"El archivo supera {max_mb} MB.")
+
+        import os
+        ext = os.path.splitext(f.name)[1].lower()
+        allowed_exts = {
+            ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".png", ".jpg", ".jpeg"
+        }
+        if ext not in allowed_exts:
+            raise forms.ValidationError("Tipo de archivo no permitido.")
+
+        ctype = getattr(f, "content_type", "") or ""
+        allowed_ctypes = {
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "image/png",
+            "image/jpeg",
+        }
+        if ctype and ctype not in allowed_ctypes:
+            raise forms.ValidationError("Tipo de contenido no permitido.")
+        return f
+
 AttachmentFormSet = inlineformset_factory(
     parent_model=AccessProposal,
     model=ProposalAttachment,
+    form=ProposalAttachmentForm,
     fields=["name", "file"],
     widgets={
         "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Document name"}),
@@ -173,4 +211,4 @@ class ProposalReviewForm(forms.ModelForm):
                 ("request_changes", "🔄 Solicitar cambios - Necesita modificaciones menores"),
                 ("reject", "❌ Rechazar - No cumple con los criterios")
             ])
-        }
+        } 
