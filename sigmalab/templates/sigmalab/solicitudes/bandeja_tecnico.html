@@ -23,7 +23,7 @@
           <div class="muted">{{ s.creado_en|date:"Y-m-d H:i" }} · {{ s.solicitante.username }}</div>
         </div>
         <div style="display:flex;gap:.5rem">
-          <a class="btn" href="{% url 'sigmalab:detalle-solicitud' s.pk %}">Ver</a>
+          <a class="btn" href="{% url 'sigmalab:detalle-solicitud' s.pk %}"><i class="bi bi-eye"></i> Ver</a>
         </div>
       </div>
     {% empty %}

@@ -8,7 +8,7 @@
       <strong>Estado:</strong> {{ solicitud.get_estado_display }}
       {% if solicitud.autonomo %}<span class="chip" style="margin-left:.5rem">Usuario autónomo</span>{% endif %}
     </div>
-    <a href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}" class="chip">← Volver</a>
+    <a href="{% url 'sigmalab:detalle-solicitud' solicitud.id %}" class="chip"><i class="bi bi-arrow-left-circle"></i> Volver</a>
   </div>
 
   <form method="post" class="card" style="padding:1rem">
@@ -45,4 +45,3 @@
   </div>
 </div>
 {% endblock %}
-

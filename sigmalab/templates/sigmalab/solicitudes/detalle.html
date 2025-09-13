@@ -13,12 +13,12 @@
   <p><strong>Código muestra:</strong> {{ solicitud.codigo_muestra|default:"-" }}</p>
 
   <div style="margin:1rem 0; display:flex; gap:.5rem; flex-wrap:wrap;">
-    <a class="cta" href="{% url 'sigmalab:nuevo-avance' solicitud.pk %}">➕ Añadir avance</a>
+    <a class="cta" href="{% url 'sigmalab:nuevo-avance' solicitud.pk %}"><i class="bi bi-plus-circle"></i> Añadir avance</a>
     {% if request.user.is_staff or request.user|has_group:"tecnico_responsable_s_lab" %}
-      <a class="cta" href="{% url 'sigmalab:cambiar-estado' solicitud.pk %}" style="background:var(--accent)">⚙️ Cambiar estado</a>
+      <a class="cta" href="{% url 'sigmalab:cambiar-estado' solicitud.pk %}" style="background:var(--accent)"><i class="bi bi-gear"></i> Cambiar estado</a>
     {% endif %}
     {% if solicitud.autonomo and request.user == solicitud.solicitante or request.user|has_group:"tecnico_responsable_s_lab" %}
-      <a class="cta" href="{% url 'sigmalab:diario-solicitud' solicitud.pk %}">📝 Registro diario</a>
+      <a class="cta" href="{% url 'sigmalab:diario-solicitud' solicitud.pk %}"><i class="bi bi-journal-text"></i> Registro diario</a>
     {% endif %}
     <a class="cta" href="{% url 'sigmalab:mis-solicitudes' %}">Mis solicitudes</a>
   </div>

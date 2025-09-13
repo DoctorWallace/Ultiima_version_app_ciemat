@@ -5,8 +5,8 @@
 {% block content %}
 <div class="card" style="margin-bottom:1rem;">
   <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
-    <a class="cta" href="{% url 'sigmalab:nueva-solicitud' %}">Nueva solicitud</a>
-    <a class="cta" href="{% url 'sigmalab:mis-solicitudes' %}" style="background:var(--accent)">Mis solicitudes</a>
+    <a class="cta" href="{% url 'sigmalab:nueva-solicitud' %}"><i class="bi bi-plus-circle"></i> Nueva solicitud</a>
+    <a class="cta" href="{% url 'sigmalab:mis-solicitudes' %}" style="background:var(--accent)"><i class="bi bi-person-lines-fill"></i> Mis solicitudes</a>
   </div>
 </div>
 
@@ -34,4 +34,3 @@
   </ul>
 </div>
 {% endblock %}
-
