@@ -5,18 +5,17 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import LoginView
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import never_cache
-from urllib.parse import quote as urlquote
-from django.shortcuts import redirect
 from django.urls import reverse
 
+from .forms import DTFRegisterForm
+from dtf.models import DTFUserProfile
+
+
 # --- Router de login (elige ICTS o DTF según 'next') ---
-# accounts/views.py (solo el router; deja el resto como lo tienes)
-
-
 def login_router(request):
     nxt = request.GET.get("next") or request.POST.get("next") or ""
     ref = request.META.get("HTTP_REFERER", "") or ""
@@ -51,22 +50,44 @@ class LoginDTF(LoginView):
             or reverse("dtf:dashboard")
         )
 
-# --- Registro DTF básico (opcional) ---
+
+# --- Registro DTF ---
 def register_dtf(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = DTFRegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.email = form.cleaned_data.get("email").lower().strip()
+            user.first_name = form.cleaned_data.get("first_name").strip()
+            user.last_name = form.cleaned_data.get("last_name").strip()
+            user.save()
+
+            # Grupo base DTF
             try:
-                g = Group.objects.get(name="Usuarios Σ-LAB")
+                g = Group.objects.get(name="usuarios_dtf")
                 user.groups.add(g)
             except Group.DoesNotExist:
                 pass
+
+            # Perfil DTF
+            email = user.email
+            is_ciemat = email.endswith("@ciemat.es")
+            DTFUserProfile.objects.update_or_create(
+                user=user,
+                defaults={
+                    "is_ciemat": is_ciemat,
+                    "departamento": form.cleaned_data.get("departamento") or "",
+                    "matricula": form.cleaned_data.get("matricula") or "",
+                    "telefono_interno": form.cleaned_data.get("telefono_interno") or "",
+                },
+            )
+
             messages.success(request, "Cuenta creada correctamente. Ahora puedes iniciar sesión.")
             return redirect("accounts:login_dtf")
     else:
-        form = UserCreationForm()
+        form = DTFRegisterForm()
     return render(request, "accounts/register_dtf.html", {"form": form})
+
 
 # --- Logout común ---
 @require_http_methods(["GET", "POST"])
@@ -87,3 +108,4 @@ def logout_view(request):
             return redirect("icts:dashboard")
         except Exception:
             return redirect("/")
+

@@ -1,16 +1,93 @@
 {% extends "base_dtf.html" %}
-{% block title %}Registro · Σ SIGMA DTF{% endblock %}
-{% block page_title %}Registro · Σ SIGMA DTF{% endblock %}
+{% block title %}Registro – SIGMA DTF{% endblock %}
+{% block page_title %}Registro – SIGMA DTF{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width:520px; margin:auto;">
-  <form method="post">
+<div class="card" style="max-width:720px; margin:auto;">
+  <form method="post" id="register-dtf-form" novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Nombre de usuario</label>
+        {{ form.username|add_class:"form-input"|add_attr:"autocomplete:username" }}
+        {{ form.username.errors }}
+      </div>
+      <div>
+        <label class="form-label">Correo electrónico</label>
+        {{ form.email|add_class:"form-input"|add_attr:"id:email"|add_attr:"autocomplete:email" }}
+        {{ form.email.errors }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Nombre</label>
+        {{ form.first_name|add_class:"form-input"|add_attr:"autocomplete:given-name" }}
+        {{ form.first_name.errors }}
+      </div>
+      <div>
+        <label class="form-label">Apellidos</label>
+        {{ form.last_name|add_class:"form-input"|add_attr:"autocomplete:family-name" }}
+        {{ form.last_name.errors }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label class="form-label">Contraseña</label>
+        {{ form.password1|add_class:"form-input"|add_attr:"autocomplete:new-password" }}
+        {{ form.password1.errors }}
+      </div>
+      <div>
+        <label class="form-label">Repetir contraseña</label>
+        {{ form.password2|add_class:"form-input"|add_attr:"autocomplete:new-password" }}
+        {{ form.password2.errors }}
+      </div>
+    </div>
+
+    <!-- Datos CIEMAT (solo si email @ciemat.es) -->
+    <div id="ciemat-extra" class="card" style="display:none; background:#f8fff8; border-color:#d3f9d8;">
+      <h3 style="margin:0 0 .75rem">Datos CIEMAT</h3>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Departamento / Unidad</label>
+          {{ form.departamento|add_class:"form-input"|add_attr:"id:departamento" }}
+          {{ form.departamento.errors }}
+        </div>
+        <div>
+          <label class="form-label">Matrícula</label>
+          {{ form.matricula|add_class:"form-input"|add_attr:"id:matricula" }}
+          {{ form.matricula.errors }}
+        </div>
+        <div>
+          <label class="form-label">Teléfono interno</label>
+          {{ form.telefono_interno|add_class:"form-input"|add_attr:"id:telefono_interno" }}
+          {{ form.telefono_interno.errors }}
+        </div>
+      </div>
+      <p class="muted">Si tu correo es @ciemat.es estos campos son obligatorios.</p>
+    </div>
+
     <div style="margin-top:1rem; display:flex; gap:.5rem;">
       <button class="cta" type="submit">Crear cuenta</button>
       <a class="cta" style="background:var(--accent)" href="{% url 'accounts:login_dtf' %}">Cancelar</a>
     </div>
   </form>
 </div>
+
+<script>
+(function(){
+  const email = document.getElementById('email');
+  const box = document.getElementById('ciemat-extra');
+  if(!email || !box) return;
+  function toggle(){
+    const v = (email.value||'').toLowerCase();
+    box.style.display = v.endsWith('@ciemat.es') ? 'block' : 'none';
+  }
+  email.addEventListener('input', toggle);
+  toggle();
+})();
+</script>
 {% endblock %}
+
