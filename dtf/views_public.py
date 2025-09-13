@@ -7,8 +7,7 @@ class DTFHomeView(TemplateView):
     template_name = "dtf/home.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect("dtf:dashboard")
+        # Muestra la portada tanto si estás autenticado como si no, para evitar bucles
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -41,4 +40,3 @@ def lab_info(request, slug):
     if not info:
         return render(request, "dtf/under_construction.html", {"slug": slug})
     return render(request, "dtf/lab_info.html", {"lab": info, "slug": slug})
-

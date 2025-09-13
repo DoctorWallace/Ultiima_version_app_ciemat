@@ -1,18 +1,25 @@
 {% extends "base_icts.html" %}
-
-{% load static %}
-{% get_media_prefix as MEDIA_URL %}
-
+{% block title %}{{ facility }} · Información{% endblock %}
+{% block page_title %}{{ facility }}{% endblock %}
 
 {% block content %}
-  {% if slug == "van-der-graaff" %}
-    {% include "icts/facilities/_van_der_graaff.html" %}
-  {% else %}
-    <div class="container">
-      <div class="card" style="padding:1rem;">
-        <h1 class="h4" style="margin-bottom:.5rem;">Info de {{ facility }}</h1>
-        <p>Esta es una página de prueba para <strong>{{ facility }}</strong>. Aquí irá la información de la instalación/equipo.</p>
-      </div>
-    </div>
-  {% endif %}
+<div class="card" style="max-width:900px;margin:0 auto">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
+    <a href="javascript:history.back()" class="chip" style="text-decoration:none;display:inline-flex;align-items:center;padding:.35rem .65rem;border:1px solid var(--border);border-radius:999px;color:var(--text);background:var(--bg-card)">⬅️ Volver</a>
+  </div>
+
+  <h3 style="margin:0 0 .5rem 0">{{ facility }}</h3>
+  <p>Esta página ofrece información básica de la técnica seleccionada. Próximamente añadiremos detalles de equipos, capacidades y condiciones de acceso.</p>
+
+  <ul style="margin-top:1rem">
+    <li>Equipo/Configuración 1 (genérico)</li>
+    <li>Equipo/Configuración 2 (genérico)</li>
+    <li>Equipo/Configuración 3 (genérico)</li>
+  </ul>
+
+  <div style="margin-top:1rem">
+    <a class="chip" href="{% url 'accounts:login_icts' %}?next={% url 'icts:dashboard' %}" style="text-decoration:none;display:inline-flex;align-items:center;padding:.45rem .85rem;border:1px solid var(--border);border-radius:999px;color:#fff;background:var(--primary)">Entrar en SIGMA ICTS</a>
+  </div>
+</div>
 {% endblock %}
+

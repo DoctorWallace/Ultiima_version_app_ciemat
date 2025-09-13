@@ -3,6 +3,9 @@
 {% block page_title %}{{ lab.name }}{% endblock %}
 {% block content %}
 <div class="card" style="max-width:900px;margin:0 auto">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:.5rem">
+    <a href="javascript:history.back()" class="chip" style="text-decoration:none;display:inline-flex;align-items:center;padding:.35rem .65rem;border:1px solid var(--border);border-radius:999px;color:var(--text);background:var(--bg-card)">⬅️ Volver</a>
+  </div>
   <div style="display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap">
     <img src="{{ lab.logo }}" alt="{{ lab.name }}" style="height:88px;object-fit:contain">
     <div>
@@ -26,4 +29,3 @@
   </div>
 </div>
 {% endblock %}
-
