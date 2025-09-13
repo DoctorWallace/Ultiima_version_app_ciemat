@@ -2,6 +2,14 @@
 from django.db import models
 from datetime import datetime
 
+def is_tecnico(user):
+    """
+    Alias para is_technician para mantener compatibilidad
+    """
+    return user.is_authenticated and (
+        user.is_superuser or user.groups.filter(name__startswith="tecnico_responsable_").exists()
+    )
+
 def generate_sample_code():
     """
     Genera un código de muestra único en formato YY-XXX
