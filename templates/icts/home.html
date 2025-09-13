@@ -1,2 +1,46 @@
+{% extends "base_icts.html" %}
+{% load static %}
 
+{% block title %}S SIGMA ICTS · Home{% endblock %}
+{% block page_title %}S SIGMA ICTS{% endblock %}
+
+{% block content %}
+
+  <div class="card">
+    <div class="hero" style="display:grid;gap:1rem;grid-template-columns:1.2fr .8fr;align-items:center;">
+      <div>
+        <h2 style="margin-bottom:.25rem;">¡Bienvenido/a!</h2>
+        <img alt="ICTS" src="/media/Logos/logo_sigma.png"
+             style="width:20%; border-radius:5rem; box-shadow:var(--shadow);">
+        <p class="lead" style="margin-top:.75rem; color:#4a5568;">
+          Portal de propuestas y gestión de acceso a la <strong>ICTS</strong> del CIEMAT.
+          Usa el botón "Entrar" para acceder con tu cuenta ICTS, o crea una cuenta si aún no la tienes.
+        </p>
+        <div style="margin-top:1rem">
+          <a class="cta" href="{% url 'accounts:login_icts' %}?next={% url 'icts:dashboard' %}">Entrar</a>
+          <a class="cta" style="margin-left:.5rem;" href="{% url 'icts:register' %}">Crear cuenta</a>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:.75rem;">Áreas S‑SIGMA ICTS</h3>
+    <div class="quick-wrap">
+      {% include "icts/_facilities_quicklinks.html" %}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_css %}
+  .cta{
+    display:inline-block; background:var(--primary); color:#fff; text-decoration:none;
+    padding:.75rem 1.25rem; border-radius:.75rem; font-weight:800; box-shadow:var(--shadow);
+    transition: transform .15s ease;
+  }
+  .cta:hover { transform: translateY(-2px); }
+  .quick-wrap{ display:flex; justify-content:center; }
+{% endblock %}
 
