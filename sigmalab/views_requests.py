@@ -1,20 +1,14 @@
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required as _login_required, user_passes_test as _user_passes_test
 
 from .models import Solicitud
 from .forms import SolicitudForm, AvanceForm, EstadoForm
 from .utils import is_tecnico
+from .views import login_required_dtf, user_passes_test_dtf
+
 
 # --- Usuario: crear y ver sus solicitudes
-
-def login_required_dtf(view):
-    return _login_required(login_url="/cuentas/login/dtf/")(view)
-
-def user_passes_test_dtf(test_func):
-    return _user_passes_test(test_func, login_url="/cuentas/login/dtf/")
 
 @login_required_dtf
 def nueva_solicitud(request):
@@ -30,20 +24,27 @@ def nueva_solicitud(request):
         form = SolicitudForm()
     return render(request, "sigmalab/solicitudes/crear.html", {"form": form})
 
+
 @login_required_dtf
 def mis_solicitudes(request):
     qs = Solicitud.objects.filter(solicitante=request.user).order_by("-creado_en")
     return render(request, "sigmalab/solicitudes/mis_solicitudes.html", {"solicitudes": qs})
 
+
 @login_required_dtf
 def detalle_solicitud(request, pk):
-    sol = get_object_or_404(Solicitud, pk=pk)
+    sol = get_object_or_404(Solicitud.objects.prefetch_related("avances__autor"), pk=pk)
     # Usuario solo ve las suyas; técnico ve todas
     if sol.solicitante != request.user and not is_tecnico(request.user):
         messages.error(request, "No tienes permiso para ver esta solicitud.")
         return redirect("sigmalab:mis-solicitudes")
     avances = sol.avances.all()
-    return render(request, "sigmalab/solicitudes/detalle.html", {"solicitud": sol, "avances": avances})
+    return render(
+        request,
+        "sigmalab/solicitudes/detalle.html",
+        {"solicitud": sol, "avances": avances},
+    )
+
 
 @login_required_dtf
 def nuevo_avance(request, pk):
@@ -68,18 +69,43 @@ def nuevo_avance(request, pk):
         form = AvanceForm()
     return render(request, "sigmalab/solicitudes/nuevo_avance.html", {"solicitud": sol, "form": form})
 
+
 # --- Técnico: bandeja, todas, cambiar estado
 
+@login_required_dtf
 @user_passes_test_dtf(is_tecnico)
 def bandeja_tecnico(request):
-    qs = Solicitud.objects.filter(estado__in=["pendiente", "aceptada", "en_curso"]).order_by("estado","-creado_en")
-    return render(request, "sigmalab/solicitudes/bandeja_tecnico.html", {"solicitudes": qs})
+    estado = (request.GET.get("estado") or "").strip()
+    base = Solicitud.objects.select_related("solicitante")
+    if estado in dict(Solicitud.Estado.choices):
+        qs = base.filter(estado=estado).order_by("-creado_en")
+    else:
+        qs = base.filter(
+            estado__in=[
+                Solicitud.Estado.PENDIENTE,
+                Solicitud.Estado.ACEPTADA,
+                Solicitud.Estado.EN_CURSO,
+            ]
+        ).order_by("estado", "-creado_en")
+        estado = ""
+    ctx = {"solicitudes": qs, "selected_estado": estado}
+    return render(request, "sigmalab/solicitudes/bandeja_tecnico.html", ctx)
 
+
+@login_required_dtf
 @user_passes_test_dtf(is_tecnico)
 def todas_solicitudes(request):
-    qs = Solicitud.objects.all().order_by("-creado_en")
-    return render(request, "sigmalab/solicitudes/todas.html", {"solicitudes": qs})
+    estado = (request.GET.get("estado") or "").strip()
+    base = Solicitud.objects.select_related("solicitante")
+    if estado in dict(Solicitud.Estado.choices):
+        qs = base.filter(estado=estado).order_by("-creado_en")
+    else:
+        qs = base.order_by("-creado_en")
+        estado = ""
+    return render(request, "sigmalab/solicitudes/todas.html", {"solicitudes": qs, "selected_estado": estado})
 
+
+@login_required_dtf
 @user_passes_test_dtf(is_tecnico)
 def cambiar_estado(request, pk):
     sol = get_object_or_404(Solicitud, pk=pk)
