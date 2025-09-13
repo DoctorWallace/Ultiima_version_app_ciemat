@@ -7,6 +7,7 @@ from django.contrib.auth.models import Group
 
 from .models import AccessProposal, Participant, ICTSUserProfile, ProposalAttachment, ProposalReview
 from django.core.exceptions import ValidationError
+from .utils import generate_user_siglas
 
 User = get_user_model()
 
@@ -184,6 +185,11 @@ class RegistrationICTSForm(UserCreationForm):
 
             group, _ = Group.objects.get_or_create(name="icts_users")
             user.groups.add(group)
+
+            # Asignar siglas canónicas al perfil si no existen
+            if hasattr(user, "icts_profile") and user.icts_profile and not user.icts_profile.user_siglas:
+                user.icts_profile.user_siglas = generate_user_siglas(user.first_name, user.last_name)
+                user.icts_profile.save(update_fields=["user_siglas"])
 
         return user
 

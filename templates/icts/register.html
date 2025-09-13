@@ -60,6 +60,13 @@
                 {% for e in form.last_name.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
               </div>
               <div class="col-md-6">
+                <label class="form-label">Siglas sugeridas</label>
+                <div id="siglas-preview" class="form-control" style="opacity:.65; pointer-events:none; background:rgba(0,0,0,.02)">
+                  —
+                </div>
+                <small class="text-muted">Vista previa no editable; se asignan de forma automática al registrarse.</small>
+              </div>
+              <div class="col-md-6">
                 <label class="form-label" for="{{ form.institution.id_for_label }}">Center</label>
                 {{ form.institution|add_class:"form-control" }}
                 {% for e in form.institution.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
@@ -91,6 +98,31 @@
               <strong>Validación:</strong> Un responsable revisará tu cuenta (máx. 48 h). Te avisaremos por email al activarla.
             </div>
           </form>
+          <script>
+            (function(){
+              function stripAccents(s){
+                try { return s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch(e){ return s; }
+              }
+              function cleanAlpha(s){ return stripAccents((s||'').toUpperCase()).replace(/[^A-Z]/g,''); }
+              function computeSiglas(fn, ln){
+                fn = cleanAlpha(fn); ln = (ln||'').trim();
+                var initial = fn ? fn.charAt(0) : 'X';
+                var parts = stripAccents(ln).trim().split(/\s+/).filter(Boolean);
+                var s1 = cleanAlpha(parts[0] || 'X');
+                if (!s1) s1 = 'X';
+                var first = s1.charAt(0) || 'X';
+                var last = s1.charAt(s1.length-1) || 'X';
+                return (initial + first + last).toUpperCase();
+              }
+              var fn = document.getElementById('id_first_name');
+              var ln = document.getElementById('id_last_name');
+              var out = document.getElementById('siglas-preview');
+              function update(){ out.textContent = computeSiglas(fn && fn.value, ln && ln.value); }
+              if (fn) fn.addEventListener('input', update);
+              if (ln) ln.addEventListener('input', update);
+              update();
+            })();
+          </script>
         </div>
       </div>
       <p class="text-muted small text-center mt-3">

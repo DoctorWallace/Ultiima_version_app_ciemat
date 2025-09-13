@@ -37,6 +37,7 @@ class AccessProposal(models.Model):
     scope = models.TextField(blank=True)
     facilities = models.ManyToManyField(Facility, blank=True)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default="draft")
+    user_siglas = models.CharField("Siglas usuario", max_length=10, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Campos adicionales del template de prueba
@@ -48,7 +49,7 @@ class AccessProposal(models.Model):
         blank=True,
         help_text="Previous approved request to copy data from"
     )
-    access_code = models.CharField(max_length=20, blank=True, help_text="Auto-generated access code")
+    access_code = models.CharField(max_length=50, blank=True, help_text="Auto-generated access code")
     
     # Información del solicitante (cuando es diferente del usuario registrado)
     applicant_is_different = models.BooleanField(default=False)

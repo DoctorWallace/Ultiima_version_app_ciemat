@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.db.models import Exists, OuterRef
 
 from .models import AccessProposal, ProposalReview
+from .utils import build_access_code, generate_user_siglas
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 def is_icts_user(user):
@@ -554,7 +555,21 @@ def proposal_decide(request, pk):
             messages.error(request, "Selección inválida.")
             return redirect("icts:proposal_detail", pk=obj.pk)
         obj.status = decision
-        obj.save(update_fields=["status"])
+        update_fields = ["status"]
+        # Generar access_code solo al aprobar y si está vacío
+        if decision == "accepted" and not obj.access_code:
+            profile = getattr(obj.applicant, "icts_profile", None)
+            siglas = None
+            if profile and getattr(profile, "user_siglas", ""):
+                siglas = profile.user_siglas
+            else:
+                siglas = generate_user_siglas(obj.applicant.first_name, obj.applicant.last_name)
+                if profile:
+                    profile.user_siglas = siglas
+                    profile.save(update_fields=["user_siglas"])
+            obj.access_code = build_access_code(obj, siglas)
+            update_fields.append("access_code")
+        obj.save(update_fields=update_fields)
         messages.success(request, f"Decisión final registrada: {obj.get_status_display()}.")
         return redirect("icts:proposal_detail", pk=obj.pk)
     return HttpResponseForbidden("Método no permitido")
