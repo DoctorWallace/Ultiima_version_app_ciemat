@@ -7,8 +7,8 @@ app_name = "icts"
 urlpatterns = [
     path("", ICTSHomeView.as_view(), name="home"),
 
-    # Usa la NUEVA vista
-    path("dashboard/", views.icts_user_dashboard, name="dashboard"),
+    # Dashboard orquestador según rol
+    path("dashboard/", views.dashboard, name="dashboard"),
     path("user/", views.icts_user_dashboard, name="user_dashboard"),
 
     path("my/", views.my_proposals, name="my_proposals"),
@@ -21,6 +21,7 @@ urlpatterns = [
     path("reviews/inbox/", views.reviewer_inbox, name="reviewer_inbox"),
     path("reviews/dashboard/", views.reviewer_dashboard_new, name="reviewer_dashboard_new"),
     path("reviews/history/", views.review_history, name="review_history"),
+    path("reviews/start/<int:pk>/", views.review_start, name="review_start"),
     path("responsable/", views.responsable_dashboard, name="responsable_dashboard"),
     path("manager/", views.manager_dashboard, name="manager_dashboard"),
     path("register/", views.RegisterICTSView.as_view(), name="register"),

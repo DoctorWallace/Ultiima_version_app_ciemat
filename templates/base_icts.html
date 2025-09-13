@@ -114,6 +114,7 @@
             <h1 class="title">{% block page_title %}Σ SIGMA ICTS{% endblock %}</h1>
             <div class="logos">
               {% block top_right_logos %}
+                {% include "icts/_topbar_actions.html" %}
                 <img src="{{ MEDIA_URL }}Logos/logo_sol.png" alt="LNF">
                 <img src="{{ MEDIA_URL }}Logos/sol_icts.png.jpg" alt="ICTS">
               {% endblock %}

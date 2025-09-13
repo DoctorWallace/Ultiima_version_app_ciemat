@@ -12,7 +12,7 @@
       <li class="menu-sep"></li>
 
       <!-- Panel principal del usuario -->
-      <li><a href="{% url 'icts:user_dashboard' %}">🏠 Mi panel</a></li>
+      <li><a href="{% url 'icts:dashboard' %}">🏠 Mi panel</a></li>
       
       <!-- Solo usuarios normales (no revisores, responsables, managers) -->
       {% if not user|has_group:"revisores" and not user|has_group:"responsables" and not user|has_group:"managers" and not user.is_superuser %}

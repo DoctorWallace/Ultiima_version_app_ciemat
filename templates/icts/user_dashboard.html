@@ -7,16 +7,18 @@
 <div class="card" style="margin-bottom:1.25rem">
   <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap">
     <div>
-      <h2 style="margin:0">👋 Bienvenido/a</h2>
+      <h2 style="margin:0">👋 Bienvenido/a {{ request.user.get_full_name|default:request.user.username }}</h2>
       <div class="muted">Desde aquí puedes gestionar tus propuestas ICTS.</div>
     </div>
-    {# Enlaces “mudos” por ahora (los activamos en el siguiente paso) #}
     <div style="display:flex; gap:.5rem; flex-wrap:wrap">
-      <span class="chip" style="opacity:.6; cursor:default;">➕ Nueva propuesta</span>
-      <span class="chip" style="opacity:.6; cursor:default;">📄 Mis propuestas</span>
+      <a class="chip" href="{% url 'icts:proposal_create' %}">➕ Nueva propuesta</a>
+      <a class="chip" href="{% url 'icts:my_proposals' %}">🗂️ Mis propuestas</a>
     </div>
   </div>
-</div>
+  {% if icts_role_name %}
+    <div class="muted" style="margin-top:.5rem">Rol: {{ icts_role_name }}</div>
+  {% endif %}
+  </div>
 
 <div class="card" style="margin-bottom:1rem">
   <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:1rem;">
@@ -24,10 +26,10 @@
     <div class="kpi"><div class="kpi-num">{{ submitted|length }}</div><div class="kpi-label">Enviadas / Revisión</div></div>
     <div class="kpi"><div class="kpi-num">{{ evaluated|length }}</div><div class="kpi-label">Evaluadas</div></div>
   </div>
-</div>
+  </div>
 
 <div class="card">
-  <h3 style="margin-bottom:.75rem;">📝 Borradores</h3>
+  <h3 style="margin-bottom:.75rem;">📄 Borradores</h3>
   {% if drafts %}
     <ul class="list">
       {% for p in drafts %}
@@ -37,8 +39,8 @@
             <div class="muted">ID #{{ p.id }}</div>
           </div>
           <div class="list-actions">
-            <span class="chip" title="Activaremos estos botones en el siguiente paso">✏️ Editar</span>
-            <span class="chip" title="Activaremos estos botones en el siguiente paso">🔍 Ver</span>
+            <a class="chip" href="{% url 'icts:proposal_edit' p.id %}">✏️ Editar</a>
+            <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">🔎 Ver</a>
           </div>
         </li>
       {% endfor %}
@@ -49,7 +51,7 @@
 </div>
 
 <div class="card">
-  <h3 style="margin-bottom:.75rem;">📤 Enviadas / En revisión</h3>
+  <h3 style="margin-bottom:.75rem;">📨 Enviadas / En revisión</h3>
   {% if submitted %}
     <ul class="list">
       {% for p in submitted %}
@@ -59,7 +61,7 @@
             <div class="muted">ID #{{ p.id }}</div>
           </div>
           <div class="list-actions">
-            <span class="chip" title="Activaremos estos botones en el siguiente paso">🔍 Ver</span>
+            <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">🔎 Ver</a>
           </div>
         </li>
       {% endfor %}
@@ -80,7 +82,7 @@
             <div class="muted">ID #{{ p.id }}</div>
           </div>
           <div class="list-actions">
-            <span class="chip" title="Activaremos estos botones en el siguiente paso">🔍 Ver informe</span>
+            <a class="chip" href="{% url 'icts:proposal_detail' p.id %}">📄 Ver informe</a>
           </div>
         </li>
       {% endfor %}
@@ -101,3 +103,4 @@
 .chip{ display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .65rem; border:1px solid var(--border); border-radius:999px; text-decoration:none; color:var(--text); background:var(--bg-card); box-shadow:var(--shadow); }
 .chip:hover{ background:#f3f4f6 }
 {% endblock %}
+
